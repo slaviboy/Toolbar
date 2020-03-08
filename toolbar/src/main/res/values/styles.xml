@@ -1,0 +1,36 @@
+<resources>
+
+    <declare-styleable name="Toolbar">
+        <attr name="iconColorNormal" format="color" />
+        <attr name="iconColorDisabled" format="color" />
+        <attr name="iconColorSelected" format="color" />
+        <attr name="elementsWidth" format="dimension" />
+        <attr name="elementsHeight" format="dimension" />
+
+        <attr name="marginParentToElement" format="dimension" />
+        <attr name="marginParentToElementTop" format="dimension" />
+        <attr name="marginParentToElementLeft" format="dimension" />
+        <attr name="marginParentToElementRight" format="dimension" />
+        <attr name="marginParentToElementBottom" format="dimension" />
+
+        <attr name="marginElementToElement" format="dimension" />
+        <attr name="marginElementToElementTop" format="dimension" />
+        <attr name="marginElementToElementLeft" format="dimension" />
+        <attr name="marginElementToElementRight" format="dimension" />
+        <attr name="marginElementToElementBottom" format="dimension" />
+
+        <attr name="dropBottomBackground" format="reference" />
+        <attr name="dropLeftBackground" format="reference" />
+        <attr name="dropTopBackground" format="reference" />
+        <attr name="dropRightBackground" format="reference" />
+        <attr name="selectedElementsBackground" format="reference|color" />
+    </declare-styleable>
+
+    <declare-styleable name="ToolbarElement">
+        <attr name="isSelectable" format="boolean" />
+        <attr name="isSelected" format="boolean" />
+        <attr name="isDisabled" format="boolean" />
+        <attr name="tooltip" format="string" localization="suggested" />
+    </declare-styleable>
+
+</resources>
