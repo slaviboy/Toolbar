@@ -1,9 +1,20 @@
 <resources>
 
     <declare-styleable name="Toolbar">
+
+        <attr name="dragShadowOpacity" format="float" />
+
+        <attr name="iconCornerRadius" format="dimension" />
+        <attr name="iconTopLeftCornerRadius" format="dimension" />
+        <attr name="iconTopRightCornerRadius" format="dimension" />
+        <attr name="iconBottomLeftCornerRadius" format="dimension" />
+        <attr name="iconBottomRightCornerRadius" format="dimension" />
+
         <attr name="iconColorNormal" format="color" />
         <attr name="iconColorDisabled" format="color" />
         <attr name="iconColorSelected" format="color" />
+        <attr name="iconColorChecked" format="color" />
+
         <attr name="elementsWidth" format="dimension" />
         <attr name="elementsHeight" format="dimension" />
 
@@ -23,13 +34,23 @@
         <attr name="dropLeftBackground" format="reference" />
         <attr name="dropTopBackground" format="reference" />
         <attr name="dropRightBackground" format="reference" />
-        <attr name="selectedElementsBackground" format="reference|color" />
+
+        <attr name="iconBackgroundSelected" format="reference|color" />
+        <attr name="iconBackgroundChecked" format="reference|color" />
+        <attr name="iconBackgroundNormal" format="reference|color" />
+        <attr name="iconBackgroundDisabled" format="reference|color" />
     </declare-styleable>
 
     <declare-styleable name="ToolbarElement">
         <attr name="isSelectable" format="boolean" />
         <attr name="isSelected" format="boolean" />
         <attr name="isDisabled" format="boolean" />
+        <attr name="isCheckable" format="boolean" />
+        <attr name="isChecked" format="boolean" />
+        <attr name="iconNormal" format="reference" />
+        <attr name="iconSelected" format="reference" />
+        <attr name="iconDisabled" format="reference" />
+        <attr name="iconChecked" format="reference" />
         <attr name="tooltip" format="string" localization="suggested" />
     </declare-styleable>
 

@@ -11,13 +11,13 @@ import android.util.Log
 import android.view.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
+import java.security.InvalidParameterException
 
 /**
  * Abstract class for creating toolbar - Vertical, Horizontal, Diagonal...
  */
 open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLongClickListener,
-        View.OnDragListener, View.OnTouchListener {
+    View.OnDragListener, View.OnTouchListener {
 
     constructor(context: Context?) : super(context) {
         applyAttributes(context, null, 0)
@@ -28,9 +28,9 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
     }
 
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
-            context,
-            attrs,
-            defStyleAttr
+        context,
+        attrs,
+        defStyleAttr
     ) {
         applyAttributes(context, attrs, defStyleAttr)
     }
@@ -40,11 +40,14 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
         // global const for the Toolbar class
         const val ELEMENTS_WIDTH = 70
         const val ELEMENTS_HEIGHT = 70
+        const val ICON_CORNER_RADIUS: Float = 0f
         const val ICON_COLOR_NORMAL: Int = Color.WHITE
         const val ICON_COLOR_DISABLED: Int = Color.GRAY
-        const val ICON_COLOR_SELECTED: Int = Color.BLUE
+        const val ICON_COLOR_SELECTED: Int = Color.WHITE
+        const val ICON_COLOR_CHECKED: Int = Color.WHITE
         const val MARGIN_ELEMENT_TO_ELEMENT: Int = 5
         const val MARGIN_PARENT_TO_ELEMENT: Int = 0
+        const val DRAG_SHADOW_OPACITY: Float = 0.6f
 
         /**
          * Inline function that is called, when the final measurement is made and
@@ -52,7 +55,7 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
          */
         inline fun View.afterMeasured(crossinline f: View.() -> Unit) {
             viewTreeObserver.addOnGlobalLayoutListener(object :
-                    ViewTreeObserver.OnGlobalLayoutListener {
+                ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
                     if (measuredWidth > 0 && measuredHeight > 0) {
                         viewTreeObserver.removeOnGlobalLayoutListener(this)
@@ -68,96 +71,147 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
      * Toolbar class.
      */
     fun applyAttributes(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) {
+
         val attributes =
-                context!!.obtainStyledAttributes(attrs, R.styleable.Toolbar, defStyleAttr, 0)
+            context!!.obtainStyledAttributes(attrs, R.styleable.Toolbar, defStyleAttr, 0)
 
-        iconColorNormal =
-                attributes.getColor(R.styleable.Toolbar_iconColorNormal, ICON_COLOR_NORMAL)
-        iconColorDisabled =
-                attributes.getColor(R.styleable.Toolbar_iconColorDisabled, ICON_COLOR_DISABLED)
-        iconColorSelected =
-                attributes.getColor(R.styleable.Toolbar_iconColorSelected, ICON_COLOR_SELECTED)
-
+        // size of the elements
         val WIDTH =
-                if (this is VerticalToolbar) VerticalToolbar.ELEMENTS_WIDTH else HorizontalToolbar.ELEMENTS_WIDTH
+            if (this is VerticalToolbar) VerticalToolbar.ELEMENTS_WIDTH else HorizontalToolbar.ELEMENTS_WIDTH
         val HEIGHT =
-                if (this is VerticalToolbar) VerticalToolbar.ELEMENTS_HEIGHT else HorizontalToolbar.ELEMENTS_HEIGHT
+            if (this is VerticalToolbar) VerticalToolbar.ELEMENTS_HEIGHT else HorizontalToolbar.ELEMENTS_HEIGHT
         elementsWidth =
-                attributes.getDimensionPixelSize(R.styleable.Toolbar_elementsWidth, WIDTH)
+            attributes.getDimensionPixelSize(R.styleable.Toolbar_elementsWidth, WIDTH)
         elementsHeight =
-                attributes.getDimensionPixelSize(R.styleable.Toolbar_elementsHeight, HEIGHT)
+            attributes.getDimensionPixelSize(R.styleable.Toolbar_elementsHeight, HEIGHT)
 
 
+        // margin between element and another element
         val marginElementToElementTemp = attributes.getDimensionPixelSize(
-                R.styleable.Toolbar_marginElementToElement,
-                MARGIN_ELEMENT_TO_ELEMENT
+            R.styleable.Toolbar_marginElementToElement,
+            MARGIN_ELEMENT_TO_ELEMENT
         )
         val topE2E = attributes.getDimensionPixelSize(
-                R.styleable.Toolbar_marginElementToElementTop,
-                marginElementToElementTemp
+            R.styleable.Toolbar_marginElementToElementTop,
+            marginElementToElementTemp
         )
         val leftE2E = attributes.getDimensionPixelSize(
-                R.styleable.Toolbar_marginElementToElementLeft,
-                marginElementToElementTemp
+            R.styleable.Toolbar_marginElementToElementLeft,
+            marginElementToElementTemp
         )
         val rightE2E = attributes.getDimensionPixelSize(
-                R.styleable.Toolbar_marginElementToElementRight,
-                marginElementToElementTemp
+            R.styleable.Toolbar_marginElementToElementRight,
+            marginElementToElementTemp
         )
         val bottomE2E = attributes.getDimensionPixelSize(
-                R.styleable.Toolbar_marginElementToElementBottom,
-                marginElementToElementTemp
+            R.styleable.Toolbar_marginElementToElementBottom,
+            marginElementToElementTemp
         )
         marginElementToElement = Rect(leftE2E, topE2E, rightE2E, bottomE2E)
 
 
+        dragShadowOpacity =
+            attributes.getFloat(R.styleable.Toolbar_dragShadowOpacity, DRAG_SHADOW_OPACITY)
+
+        // margin between parent and element
         val marginParentToElementTemp = attributes.getDimensionPixelSize(
-                R.styleable.Toolbar_marginParentToElement,
-                MARGIN_PARENT_TO_ELEMENT
+            R.styleable.Toolbar_marginParentToElement,
+            MARGIN_PARENT_TO_ELEMENT
         )
         val topP2E = attributes.getDimensionPixelSize(
-                R.styleable.Toolbar_marginParentToElementTop,
-                marginParentToElementTemp
+            R.styleable.Toolbar_marginParentToElementTop,
+            marginParentToElementTemp
         )
         val leftP2E = attributes.getDimensionPixelSize(
-                R.styleable.Toolbar_marginParentToElementLeft,
-                marginParentToElementTemp
+            R.styleable.Toolbar_marginParentToElementLeft,
+            marginParentToElementTemp
         )
         val rightP2E = attributes.getDimensionPixelSize(
-                R.styleable.Toolbar_marginParentToElementRight,
-                marginParentToElementTemp
+            R.styleable.Toolbar_marginParentToElementRight,
+            marginParentToElementTemp
         )
         val bottomP2E = attributes.getDimensionPixelSize(
-                R.styleable.Toolbar_marginParentToElementBottom,
-                marginParentToElementTemp
+            R.styleable.Toolbar_marginParentToElementBottom,
+            marginParentToElementTemp
         )
         marginParentToElement = Rect(leftP2E, topP2E, rightP2E, bottomP2E)
 
-        selectedElementsBackground = attributes.getDrawable(R.styleable.Toolbar_selectedElementsBackground)
+        // corner radii for each corner
+        val iconCornerRadius =
+            attributes.getDimension(R.styleable.Toolbar_iconCornerRadius, ICON_CORNER_RADIUS)
+        iconTopLeftCornerRadius =
+            attributes.getDimension(R.styleable.Toolbar_iconTopLeftCornerRadius, iconCornerRadius)
+        iconTopRightCornerRadius =
+            attributes.getDimension(R.styleable.Toolbar_iconTopRightCornerRadius, iconCornerRadius)
+        iconBottomLeftCornerRadius = attributes.getDimension(
+            R.styleable.Toolbar_iconBottomLeftCornerRadius,
+            iconCornerRadius
+        )
+        iconBottomRightCornerRadius = attributes.getDimension(
+            R.styleable.Toolbar_iconBottomRightCornerRadius,
+            iconCornerRadius
+        )
+
+        // icon colors
+        iconColorNormal =
+            attributes.getColor(R.styleable.Toolbar_iconColorNormal, ICON_COLOR_NORMAL)
+        iconColorDisabled =
+            attributes.getColor(R.styleable.Toolbar_iconColorDisabled, ICON_COLOR_DISABLED)
+        iconColorSelected =
+            attributes.getColor(R.styleable.Toolbar_iconColorSelected, ICON_COLOR_SELECTED)
+        iconColorChecked =
+            attributes.getColor(R.styleable.Toolbar_iconColorChecked, ICON_COLOR_CHECKED)
+
+        // elements backgrounds
+        iconBackgroundSelected = attributes.getDrawable(R.styleable.Toolbar_iconBackgroundSelected)
+        iconBackgroundChecked = attributes.getDrawable(R.styleable.Toolbar_iconBackgroundChecked)
+        iconBackgroundNormal = attributes.getDrawable(R.styleable.Toolbar_iconBackgroundNormal)
+        iconBackgroundDisabled = attributes.getDrawable(R.styleable.Toolbar_iconBackgroundDisabled)
+
+        // drag and drop backgrounds on hover element
         dropTopBackground = attributes.getDrawable(R.styleable.Toolbar_dropTopBackground)
         dropLeftBackground = attributes.getDrawable(R.styleable.Toolbar_dropLeftBackground)
         dropRightBackground = attributes.getDrawable(R.styleable.Toolbar_dropRightBackground)
         dropBottomBackground = attributes.getDrawable(R.styleable.Toolbar_dropBottomBackground)
-        setBackgrounds()
+        setDefaultBackgrounds()
 
         attributes.recycle()
     }
 
-    val elements = ArrayList<ToolbarElement>()            // element that are in this constrain layout
+    val elements =
+        ArrayList<ToolbarElement>()            // element that are in this constrain layout
     var marginElementToElement: Rect                      // margin between two ImageButton elements
     var marginParentToElement: Rect                       // margin between the parent container and all ImageButton elements
     var elementsWidth: Int                                // width of all ImageButton elements
     var elementsHeight: Int                               // height of all ImageButton elements
-    var iconColorNormal: Int                              // icon color for the ImageButton when element is in normal state
-    var iconColorDisabled: Int                            // icon color for the ImageButton when element is in disabled state
-    var iconColorSelected: Int                            // icon color for the ImageButton when element is in disabled state
-    var selectedViewId: Int = -1                          // current selected ImageButton view id
-    var toolbarGroup: ToolbarGroup? = null                // the group containing this toolbar if such exist, used to transfer selectable elements
-    var dropBottomBackground: Drawable? = null            // background for drag and drop, when user hovers the bottom part of the view
-    var dropLeftBackground: Drawable? = null              // background for drag and drop, when user hovers the left part of the view
-    var dropTopBackground: Drawable? = null               // background for drag and drop, when user hovers the top part of the view
-    var dropRightBackground: Drawable? = null             // background for drag and drop, when user hovers the right part of the view
-    var selectedElementsBackground: Drawable? = null      // background for selected elements
+    var selectedView: ToolbarElement? = null              // current selected ImageButton view id
+    var toolbarGroup: ToolbarGroup? =
+        null                // the group containing this toolbar if such exist, used to transfer selectable elements
+    var dragShadowOpacity: Float                          // the opacity for the drag shadow
+
+    // background for drag and drop, when user hovers top, left, right or bottom side
+    var dropBottomBackground: Drawable? = null
+    var dropLeftBackground: Drawable? = null
+    var dropTopBackground: Drawable? = null
+    var dropRightBackground: Drawable? = null
+
+    // icon for different states for the elements of the toolbar
+    var iconColorNormal: Int
+    var iconColorDisabled: Int
+    var iconColorSelected: Int
+    var iconColorChecked: Int
+
+    // background behind the icons for different states for the elements of the toolbar
+    var iconBackgroundNormal: Drawable? = null
+    var iconBackgroundDisabled: Drawable? = null
+    var iconBackgroundSelected: Drawable? = null
+    var iconBackgroundChecked: Drawable? = null
+
+    // corner radii for each corner
+    var iconTopLeftCornerRadius: Float
+    var iconTopRightCornerRadius: Float
+    var iconBottomLeftCornerRadius: Float
+    var iconBottomRightCornerRadius: Float
 
     // listeners and whether to override the existing one in this class and stop them from executing
     lateinit var elementsOnClickListener: ((v: View?) -> Unit)
@@ -169,40 +223,64 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
     var elementsOnTouchOverride: Boolean = false
     var elementsOnDragOverride: Boolean = false
 
+    // listener for state change for all elements - normal(enabled), disabled, selected, checked
+    lateinit var onElementsStateChangeListener: ((element: ToolbarElement, previousState: Int, currentState: Int) -> Unit)
+    var onElementsStateChangeListenerOverride: Boolean = false
+
     init {
 
         // set default values
+        iconTopLeftCornerRadius = ICON_CORNER_RADIUS
+        iconTopRightCornerRadius = ICON_CORNER_RADIUS
+        iconBottomLeftCornerRadius = ICON_CORNER_RADIUS
+        iconBottomRightCornerRadius = ICON_CORNER_RADIUS
         iconColorNormal = ICON_COLOR_NORMAL
         iconColorDisabled = ICON_COLOR_DISABLED
         iconColorSelected = ICON_COLOR_SELECTED
+        iconColorChecked = ICON_COLOR_CHECKED
         elementsWidth = ELEMENTS_WIDTH
         elementsHeight = ELEMENTS_HEIGHT
-        marginElementToElement = Rect(MARGIN_ELEMENT_TO_ELEMENT, MARGIN_ELEMENT_TO_ELEMENT, MARGIN_ELEMENT_TO_ELEMENT, MARGIN_ELEMENT_TO_ELEMENT)
-        marginParentToElement = Rect(MARGIN_PARENT_TO_ELEMENT, MARGIN_PARENT_TO_ELEMENT, MARGIN_PARENT_TO_ELEMENT, MARGIN_PARENT_TO_ELEMENT)
+        marginElementToElement = Rect(
+            MARGIN_ELEMENT_TO_ELEMENT,
+            MARGIN_ELEMENT_TO_ELEMENT,
+            MARGIN_ELEMENT_TO_ELEMENT,
+            MARGIN_ELEMENT_TO_ELEMENT
+        )
+        marginParentToElement = Rect(
+            MARGIN_PARENT_TO_ELEMENT,
+            MARGIN_PARENT_TO_ELEMENT,
+            MARGIN_PARENT_TO_ELEMENT,
+            MARGIN_PARENT_TO_ELEMENT
+        )
+        dragShadowOpacity = DRAG_SHADOW_OPACITY
 
-        setBackgrounds()
+        setDefaultBackgrounds()
 
         this.afterMeasured {
             val elements: Array<ToolbarElement> =
-                    Array(childCount) { i -> this@Toolbar.getChildAt(i) as ToolbarElement }
+                Array(childCount) { i -> this@Toolbar.getChildAt(i) as ToolbarElement }
             add(0, *elements)
         }
     }
 
-    fun setBackgrounds() {
+    fun setDefaultBackgrounds() {
 
         // set default drop backgrounds
         if (dropTopBackground == null) {
-            dropTopBackground = ContextCompat.getDrawable(context, R.drawable.default_drop_top_background)
+            dropTopBackground =
+                ContextCompat.getDrawable(context, R.drawable.default_drop_top_background)
         }
         if (dropLeftBackground == null) {
-            dropLeftBackground = ContextCompat.getDrawable(context, R.drawable.default_drop_left_background)
+            dropLeftBackground =
+                ContextCompat.getDrawable(context, R.drawable.default_drop_left_background)
         }
         if (dropRightBackground == null) {
-            dropRightBackground = ContextCompat.getDrawable(context, R.drawable.default_drop_right_background)
+            dropRightBackground =
+                ContextCompat.getDrawable(context, R.drawable.default_drop_right_background)
         }
         if (dropBottomBackground == null) {
-            dropBottomBackground = ContextCompat.getDrawable(context, R.drawable.default_drop_bottom_background)
+            dropBottomBackground =
+                ContextCompat.getDrawable(context, R.drawable.default_drop_bottom_background)
         }
 
         // set default toolbar background
@@ -221,28 +299,20 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
         elementsOnLongClickOverride = override
     }
 
-    fun setOnTouchListener(override: Boolean, listener: ((v: View?, event: MotionEvent?) -> Boolean)) {
+    fun setOnTouchListener(
+        override: Boolean,
+        listener: ((v: View?, event: MotionEvent?) -> Boolean)
+    ) {
         elementsOnTouchListener = listener
         elementsOnTouchOverride = override
     }
 
-    fun setOnDragListener(override: Boolean, listener: ((v: View?, dragEvent: DragEvent?) -> Boolean)) {
+    fun setOnDragListener(
+        override: Boolean,
+        listener: ((v: View?, dragEvent: DragEvent?) -> Boolean)
+    ) {
         elementsOnDragListener = listener
         elementsOnDragOverride = override
-    }
-
-    /**
-     * Set the background for the hovered view when, the dragView exist the current
-     * view it was hovering.
-     * @param view the view that was hovered
-     */
-    fun dragExitBackground(view: View) {
-        val parent = view.parent as Toolbar
-        if (parent.selectedElementsBackground != null && view.id == selectedViewId) {
-            view.background = selectedElementsBackground
-        } else {
-            view.setBackgroundColor(Color.TRANSPARENT)
-        }
     }
 
     override fun onDrag(v: View?, dragEvent: DragEvent?): Boolean {
@@ -256,13 +326,13 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
             }
         }
 
-        val view = v as ToolbarElement
+        val element = v as ToolbarElement
         when (dragEvent?.action) {
             DragEvent.ACTION_DRAG_ENDED -> {
                 return true
             }
             DragEvent.ACTION_DRAG_EXITED -> {
-                dragExitBackground(view)
+                element.changeState()
                 return true
             }
             DragEvent.ACTION_DRAG_ENTERED -> {
@@ -273,20 +343,20 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
             }
             DragEvent.ACTION_DROP -> {
 
-                dragExitBackground(view)
+                element.changeState()
 
                 val dragView = dragEvent.localState as ToolbarElement
-                if (dragView.id == view.id) return true
+                if (dragView.id == element.id) return true
 
                 // remove the ImageButton from its existing toolbar
                 val dragViewParent = dragView.parent as Toolbar
-                val viewParent = view.parent as Toolbar
+                val viewParent = element.parent as Toolbar
 
                 // make sure selectable element are dropped between toolbars in same toolbar group
                 if (dragView.isSelectable &&
-                        dragViewParent.id != viewParent.id &&
-                        (dragViewParent.toolbarGroup == null || viewParent.toolbarGroup == null) ||
-                        (dragViewParent.toolbarGroup != null && dragViewParent.toolbarGroup != viewParent.toolbarGroup)
+                    dragViewParent.id != viewParent.id &&
+                    (dragViewParent.toolbarGroup == null || viewParent.toolbarGroup == null) ||
+                    (dragViewParent.toolbarGroup != null && dragViewParent.toolbarGroup != viewParent.toolbarGroup)
                 ) {
                     throw IllegalStateException("You can not transfer selectable object to another toolbar, use ToolbarGroup instead!")
                 }
@@ -294,10 +364,10 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
                 // find the start index, where the ImageButton will  be placed in the toolbar
                 var nextIndex = 0
                 for (i in viewParent.elements.indices) {
-                    if (viewParent.elements[i].id == view.id) {
+                    if (viewParent.elements[i].id == element.id) {
 
                         val ifCheck =
-                                if (view.parent is HorizontalToolbar) dragEvent.x < view.width / 2 else dragEvent.y < view.height / 2
+                            if (element.parent is HorizontalToolbar) dragEvent.x < element.width / 2 else dragEvent.y < element.height / 2
                         nextIndex = if (ifCheck) {
                             i
                         } else {
@@ -316,16 +386,16 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
                  * animation is done, the same view is added to its new parent
                  */
                 dragViewParent.layoutTransition.addTransitionListener(object :
-                        LayoutTransition.TransitionListener {
+                    LayoutTransition.TransitionListener {
                     override fun startTransition(
-                            transition: LayoutTransition?, container: ViewGroup?,
-                            view: View?, transitionType: Int
+                        transition: LayoutTransition?, container: ViewGroup?,
+                        view: View?, transitionType: Int
                     ) {
                     }
 
                     override fun endTransition(
-                            transition: LayoutTransition?, container: ViewGroup?,
-                            view: View?, transitionType: Int
+                        transition: LayoutTransition?, container: ViewGroup?,
+                        view: View?, transitionType: Int
                     ) {
 
                         if (view?.id == dragView.id && isFirstCall) {
@@ -343,9 +413,9 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
                             viewParent.add(nextIndex, dragView)
 
                             // change the selected element, for both toolbars
-                            if (dragView.id == dragViewParent.selectedViewId && dragView.isSelectable) {
-                                dragViewParent.clearSelection()
-                                viewParent.setSelection(dragView)
+                            if (dragView.isSelected) {
+                                dragViewParent.selectedView = null
+                                viewParent.selectedView = dragView
                             }
 
                             isFirstCall = false
@@ -361,26 +431,26 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
             DragEvent.ACTION_DRAG_LOCATION -> {
 
                 val dragView = dragEvent.localState as ToolbarElement
-                if (view.id == dragView.id) {
+                if (element.id == dragView.id) {
                     return true
                 }
 
-                if (view.parent is VerticalToolbar) {
+                if (element.parent is VerticalToolbar) {
 
                     // change the background to show where the ImageButton will be dropped
-                    if (dragEvent.y < view.height / 2) {
-                        view.background = dropTopBackground
+                    if (dragEvent.y < element.height / 2) {
+                        element.background = dropTopBackground
                     } else {
-                        view.background = dropBottomBackground
+                        element.background = dropBottomBackground
                     }
 
-                } else if (view.parent is HorizontalToolbar) {
+                } else if (element.parent is HorizontalToolbar) {
 
                     // change the background to show where the ImageButton will be dropped
-                    if (dragEvent.x < view.width / 2) {
-                        view.background = dropLeftBackground
+                    if (dragEvent.x < element.width / 2) {
+                        element.background = dropLeftBackground
                     } else {
-                        view.background = dropRightBackground
+                        element.background = dropRightBackground
                     }
                 }
                 return true
@@ -416,17 +486,24 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
             }
         }
 
-        // find whether the clicked view is selectable
-        val currentToolbarElement = v as ToolbarElement
-        if (currentToolbarElement.isSelectable && !currentToolbarElement.isDisabled) {
+        // change icon and background for selectable elements
+        val element = v as ToolbarElement
+        if (element.isSelectable && !element.isDisabled) {
 
             // change color, set current and remove previous selection
-            clearSelection()
-            setSelection(v)
+            selectedView?.isSelected = false
+            selectedView = element
+            selectedView?.isSelected = true
+        }
+
+        // change icon and background for checkable elements
+        if (element.isCheckable && !element.isDisabled) {
+            element.isChecked = !element.isChecked
         }
     }
 
     override fun onLongClick(v: View?): Boolean {
+
         if (::elementsOnLongClickListener.isInitialized) {
             val returnValue = elementsOnLongClickListener.invoke(v)
 
@@ -437,63 +514,46 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
         }
 
         // instantiates the drag shadow builder
-        val toolbarElement = v as ToolbarElement
+        val element = v as ToolbarElement
         val previousIconColor = when {
-            v.id == selectedViewId -> {
+            element.isDisabled -> {
+                iconColorDisabled
+            }
+            element.isSelected -> {
                 iconColorSelected
             }
-            toolbarElement.isDisabled -> {
-                iconColorDisabled
+            element.isChecked -> {
+                iconColorChecked
             }
             else -> {
                 iconColorNormal
             }
         }
         val myShadow = DragShadowBuilder(
-                v, Color.BLACK, Color.WHITE, previousIconColor, 12f, 0.6f
+            element, Color.BLACK, Color.WHITE, previousIconColor,
+            floatArrayOf(
+                iconTopLeftCornerRadius, iconTopLeftCornerRadius,
+                iconTopRightCornerRadius, iconTopRightCornerRadius,
+                iconBottomRightCornerRadius, iconBottomRightCornerRadius,
+                iconBottomLeftCornerRadius, iconBottomLeftCornerRadius
+            ),
+            dragShadowOpacity
         )
 
         // starts the drag
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            v.startDragAndDrop(null, myShadow, v, 0)
+            element.startDragAndDrop(null, myShadow, element, 0)
         } else {
-            v.startDrag(null, myShadow, v, 0)
+            element.startDrag(null, myShadow, element, 0)
         }
 
         return true
     }
 
-
     /**
-     * Set the current selected element for this constrain layout(toolbar)
-     */
-    fun setSelection(v: View) {
-        val element = v as ToolbarElement
-        DrawableCompat.setTint(element.drawable, iconColorSelected)
-        element.background = selectedElementsBackground
-        selectedViewId = element.id
-    }
-
-    /**
-     * Clear the current selected element if such exist, set selected
-     * element to none.
-     */
-    fun clearSelection() {
-
-        if (selectedViewId != -1) {
-            val element = elements.find { s -> s.id == selectedViewId }
-            if (element != null) {
-                DrawableCompat.setTint(element.drawable, iconColorNormal)
-                element.background = null
-            }
-            selectedViewId = -1
-        }
-    }
-
-
-    /**
-     * Add new ImageButton element to this constrain layout and add it to the elements and
-     * toolbar elements array with start index given as argument.
+     * Add new ToolbarElement element to this toolbar(constrain layout) and add it to the
+     * toolbar elements array with start index given as argument. Attach the acquired
+     * properties to the new toolbar element and set listeners.
      */
     fun add(startIndex: Int = 0, vararg elements: ToolbarElement) {
 
@@ -513,15 +573,22 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
             element.setOnDragListener(this)
             element.setOnTouchListener(this)
             element.isInitInToolbar = true
-            if (element.isSelected) {
-                setSelection(element)
-                element.isSelected = false  // remove it, used only on initialization
-            }
-            if (element.isDisabled) {
-                DrawableCompat.setTint(element.drawable, iconColorDisabled)
-            }
 
-            if (indexOfChild(element) == -1) addView(element, 0)
+            checkException(element)
+
+            if (indexOfChild(element) == -1) {
+                addView(element, 0)
+            }
+            element.changeState()
+
+            // attach listener after the element is added to parent
+            if (::onElementsStateChangeListener.isInitialized) {
+                element.setOnStateChangeListener(
+                    onElementsStateChangeListenerOverride
+                ) { e: ToolbarElement, previousState: Int, currentState: Int ->
+                    onElementsStateChangeListener.invoke(e, previousState, currentState)
+                }
+            }
 
             // for transferring element from another toolbar as last element
             if (startIndex + i >= this.elements.size) {
@@ -535,14 +602,62 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
     }
 
     /**
+     * Check the toolbar element for exceptions, when added to the toolbar.
+     */
+    fun checkException(element: ToolbarElement) {
+
+        if (selectedView == null && element.isSelected) {
+            selectedView = element
+        } else if (selectedView != null && element.isSelected && selectedView?.id != element.id) {
+            throw InvalidParameterException(
+                "Cannot have two or more elements selected at the same time: ${getId(selectedView!!)} and ${getId(
+                    element
+                )}"
+            )
+        }
+
+        if ((element.isSelectable && element.isCheckable) ||
+            (element.isSelectable && element.isChecked) ||
+            (element.isSelected && element.isCheckable) ||
+            (element.isSelected && element.isChecked)
+        ) {
+            throw InvalidParameterException(
+                "Toolbar elements can`t be selectable and checkable at the same time: ${getId(
+                    element
+                )}"
+            )
+        }
+
+        if (!element.isSelectable && element.isSelected) {
+            throw InvalidParameterException(
+                "Toolbar elements must be selectable, in order to be selected: ${getId(element)}"
+            )
+        }
+
+        if (!element.isCheckable && element.isChecked) {
+            throw InvalidParameterException(
+                "Toolbar elements must be checkable, in order to be checked: ${getId(element)}"
+            )
+        }
+    }
+
+    /**
+     * Get the id as a string, used when throwing a exception with the view id,
+     * where the problem was found.
+     */
+    fun getId(view: View): String {
+        return if (view.id == View.NO_ID) "no-id" else view.resources.getResourceName(view.id)
+    }
+
+    /**
      * Update the constrain set, in order to update the position of the ImageButtons
      * in this constrain layout.
      */
     open abstract fun updateSet()
 
     /**
-     * Remove ImageButton element, from this constrain layout and return
-     * the toolbar element corresponding to this element
+     * Remove ImageButton element, from current toolbar(constrain layout) and update
+     * set, that will change the elements position, margin and padding.
      */
     fun remove(element: ToolbarElement) {
 
@@ -555,5 +670,18 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
 
         removeView(element)
         updateSet()
+    }
+
+
+    /**
+     * Set the listener for the state change, for all elements added to this
+     * toolbar.
+     */
+    fun setOnElementsStateChangeListener(
+        override: Boolean,
+        listener: ((element: ToolbarElement, previousState: Int, currentState: Int) -> Unit)
+    ) {
+        onElementsStateChangeListener = listener
+        onElementsStateChangeListenerOverride = override
     }
 }

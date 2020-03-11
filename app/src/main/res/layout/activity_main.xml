@@ -6,216 +6,375 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.slaviboy.toolbar.VerticalToolbar
-        android:id="@+id/vertical_toolbar1"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/checkable_toolbar_label"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        app:marginParentToElementTop="5dp"
-        app:marginParentToElementBottom="5dp"
-        android:animateLayoutChanges="true"
-        app:elementsHeight="0dp"
-        app:elementsWidth="45dp"
-        app:iconColorDisabled="#13ffffff"
-        app:iconColorNormal="#ffffff"
-        app:iconColorSelected="#2CA0D4"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        android:text="Checkable Toolbar"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.slaviboy.toolbar.ToolbarElement
-            android:id="@+id/id1"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:padding="8dp"
-            android:src="@drawable/ic_8"
-            app:tooltip="Folder" />
-
-        <com.slaviboy.toolbar.ToolbarElement
-            android:id="@+id/id2"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:padding="8dp"
-            app:tooltip="Lightning"
-            android:src="@drawable/ic_7" />
-
-        <com.slaviboy.toolbar.ToolbarElement
-            android:id="@+id/id3"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:padding="8dp"
-            app:tooltip="Upload File"
-            android:src="@drawable/ic_1" />
-
-        <com.slaviboy.toolbar.ToolbarElement
-            android:id="@+id/id4"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:padding="8dp"
-            app:tooltip="Like"
-            android:src="@drawable/ic_6" />
-
-        <com.slaviboy.toolbar.ToolbarElement
-            android:id="@+id/id5"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:padding="8dp"
-            app:tooltip="Delete"
-            android:src="@drawable/ic_5" />
-
-    </com.slaviboy.toolbar.VerticalToolbar>
-
-    <com.slaviboy.toolbar.VerticalToolbar
-        android:id="@+id/vertical_toolbar2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="20dp"
-        android:animateLayoutChanges="true"
-        app:elementsHeight="0dp"
-        app:elementsWidth="45dp"
-        app:marginParentToElementTop="5dp"
-        app:marginParentToElementBottom="5dp"
-        app:iconColorDisabled="#13ffffff"
-        app:iconColorNormal="#ffffff"
-        app:iconColorSelected="#2CA0D4"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.slaviboy.toolbar.ToolbarElement
-            android:id="@+id/id6"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:padding="8dp"
-            app:tooltip="Money"
-            android:src="@drawable/ic_3"
-            app:isSelectable="true"
-            app:isSelected="true" />
-
-        <com.slaviboy.toolbar.ToolbarElement
-            android:id="@+id/id7"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:padding="8dp"
-            app:tooltip="Music"
-            android:src="@drawable/ic_2"
-            app:isSelectable="true" />
-
-    </com.slaviboy.toolbar.VerticalToolbar>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.slaviboy.toolbar.HorizontalToolbar
-        android:id="@+id/horizontal_toolbar1"
+        android:id="@+id/checkable_toolbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
         android:animateLayoutChanges="true"
+        android:background="@drawable/toolbar_background"
+        android:padding="4dp"
+        app:dropBottomBackground="@drawable/custom_drop_bottom_background"
+        app:dropLeftBackground="@drawable/custom_drop_left_background"
+        app:dropRightBackground="@drawable/custom_drop_right_background"
+        app:dropTopBackground="@drawable/custom_drop_top_background"
         app:elementsHeight="0dp"
-        app:elementsWidth="45dp"
-        app:marginParentToElementLeft="5dp"
-        app:marginParentToElementRight="5dp"
+        app:elementsWidth="40dp"
+        app:iconBackgroundChecked="@drawable/default_icon_background_checked"
         app:iconColorDisabled="#13ffffff"
-        app:iconColorNormal="#ffffff"
-        app:iconColorSelected="#2CA0D4"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:iconColorSelected="#68000000"
+        app:iconCornerRadius="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/checkable_toolbar_label">
 
         <com.slaviboy.toolbar.ToolbarElement
-            android:id="@+id/id8"
+            android:id="@+id/basketball"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:padding="8dp"
-            app:tooltip="Back"
-            android:src="@drawable/ic_13"
-            app:isDisabled="true" />
+            app:iconNormal="@drawable/ic_15"
+            app:isCheckable="true"
+            app:isChecked="true"
+            app:tooltip="Basketball" />
 
         <com.slaviboy.toolbar.ToolbarElement
-            android:id="@+id/id9"
+            android:id="@+id/volleyball"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:padding="8dp"
-            app:tooltip="Microphone"
-            android:background="#000000"
-            android:src="@drawable/ic_10"
-            app:isSelectable="true" />
+            app:iconNormal="@drawable/ic_17"
+            app:isCheckable="true"
+            app:tooltip="Volleyball" />
 
         <com.slaviboy.toolbar.ToolbarElement
-            android:id="@+id/id10"
+            android:id="@+id/boxing"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:padding="8dp"
-            app:tooltip="Next"
-            android:src="@drawable/ic_12"
-            app:isDisabled="true" />
+            app:iconNormal="@drawable/ic_18"
+            app:isCheckable="true"
+            app:tooltip="Boxing" />
+
+        <com.slaviboy.toolbar.ToolbarElement
+            android:id="@+id/rugby"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            app:iconNormal="@drawable/ic_19"
+            app:isCheckable="true"
+            app:tooltip="Rugby" />
 
     </com.slaviboy.toolbar.HorizontalToolbar>
 
-    <com.slaviboy.toolbar.HorizontalToolbar
-        android:id="@+id/horizontal_toolbar2"
-        android:layout_width="wrap_content"
+
+    <TextView
+        android:id="@+id/selectable_toolbar_label"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="Selectable Toolbar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/checkable_toolbar" />
+
+    <com.slaviboy.toolbar.HorizontalToolbar
+        android:id="@+id/selectable_toolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
-        android:background="@drawable/toolbar_background"
-        app:selectedElementsBackground="@drawable/toolbar_elements_background"
-        app:dropTopBackground="@drawable/custom_drop_top_background"
-        app:dropLeftBackground="@drawable/custom_drop_left_background"
-        app:dropRightBackground="@drawable/custom_drop_right_background"
-        app:dropBottomBackground="@drawable/custom_drop_bottom_background"
+        android:background="@drawable/selectable_toolbar_background"
+        android:padding="4dp"
+        app:dropBottomBackground="@drawable/custom_drop_bottom_radial_background"
+        app:dropLeftBackground="@drawable/custom_drop_left_radial_background"
+        app:dropRightBackground="@drawable/custom_drop_right_radial_background"
+        app:dropTopBackground="@drawable/custom_drop_top_radial_background"
         app:elementsHeight="0dp"
         app:elementsWidth="40dp"
-        android:padding="4dp"
+        app:iconBackgroundChecked="@drawable/icon_background_selected_circular"
         app:iconColorDisabled="#13ffffff"
-        app:iconColorNormal="#ffffff"
-        app:iconColorSelected="#ffffff"
-        app:layout_constraintTop_toTopOf="parent"
+        app:iconColorSelected="#68000000"
+        app:iconCornerRadius="40dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/selectable_toolbar_label"
+        app:marginParentToElementLeft="5dp"
+        app:marginParentToElementRight="5dp">
 
         <com.slaviboy.toolbar.ToolbarElement
-            android:id="@+id/id11"
+            android:id="@+id/upload"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:padding="8dp"
-            app:tooltip="Shield"
-            android:src="@drawable/ic_14"
-            app:isSelectable="true" />
+            app:iconNormal="@drawable/ic_1"
+            app:isSelectable="true"
+            app:isSelected="true"
+            app:tooltip="Upload" />
 
         <com.slaviboy.toolbar.ToolbarElement
-            android:id="@+id/id12"
+            android:id="@+id/note"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:padding="8dp"
-            app:tooltip="Basketball"
-            android:src="@drawable/ic_15"
-            app:isSelectable="true" />
+            app:iconNormal="@drawable/ic_2"
+            app:isSelectable="true"
+            app:tooltip="Music" />
 
         <com.slaviboy.toolbar.ToolbarElement
-            android:id="@+id/id13"
+            android:id="@+id/money"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:padding="8dp"
-            app:tooltip="Volleyball"
-            android:src="@drawable/ic_17"
-            app:isSelectable="true" />
+            app:iconNormal="@drawable/ic_3"
+            app:isSelectable="true"
+            app:tooltip="Money" />
 
         <com.slaviboy.toolbar.ToolbarElement
-            android:id="@+id/id14"
+            android:id="@+id/photo"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:padding="8dp"
-            app:tooltip="Boxing"
-            android:src="@drawable/ic_18"
-            app:isSelectable="true" />
+            app:iconNormal="@drawable/ic_4"
+            app:isSelectable="true"
+            app:tooltip="Photo" />
+
+    </com.slaviboy.toolbar.HorizontalToolbar>
+
+
+    <TextView
+        android:id="@+id/button_toolbar_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="Button Toolbar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/selectable_toolbar" />
+
+    <com.slaviboy.toolbar.HorizontalToolbar
+        android:id="@+id/button_toolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:background="@drawable/button_toolbar_background"
+        android:padding="4dp"
+        app:dropBottomBackground="@drawable/custom_drop_bottom_radial_background"
+        app:dropLeftBackground="@drawable/custom_drop_left_radial_background"
+        app:dropRightBackground="@drawable/custom_drop_right_radial_background"
+        app:dropTopBackground="@drawable/custom_drop_top_radial_background"
+        app:elementsHeight="0dp"
+        app:elementsWidth="40dp"
+        app:iconBackgroundChecked="@drawable/icon_background_selected_circular"
+        app:iconColorDisabled="#13ffffff"
+        app:iconColorSelected="#68000000"
+        app:iconCornerRadius="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_toolbar_label"
+        app:marginParentToElementLeft="15dp"
+        app:marginParentToElementRight="15dp">
 
         <com.slaviboy.toolbar.ToolbarElement
-            android:id="@+id/id15"
+            android:id="@+id/trash"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:padding="8dp"
-            app:tooltip="Rugby"
-            android:src="@drawable/ic_19"
-            app:isSelectable="true" />
+            app:iconNormal="@drawable/ic_5"
+            app:tooltip="Recycle Bin" />
+
+        <com.slaviboy.toolbar.ToolbarElement
+            android:id="@+id/heart"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            app:iconNormal="@drawable/ic_6"
+            app:tooltip="Heart" />
+
+        <com.slaviboy.toolbar.ToolbarElement
+            android:id="@+id/lightning"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            app:iconNormal="@drawable/ic_7"
+            app:tooltip="Lightning" />
+
+        <com.slaviboy.toolbar.ToolbarElement
+            android:id="@+id/folder"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            app:iconNormal="@drawable/ic_8"
+            app:tooltip="Folder" />
+
+    </com.slaviboy.toolbar.HorizontalToolbar>
+
+
+    <TextView
+        android:id="@+id/disable_toolbar_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="Disabled Toolbar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_toolbar" />
+
+    <com.slaviboy.toolbar.HorizontalToolbar
+        android:id="@+id/disabled_toolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:background="@drawable/disabled_toolbar_background"
+        android:padding="4dp"
+        app:dropBottomBackground="@drawable/custom_drop_bottom_radial_background"
+        app:dropLeftBackground="@drawable/custom_drop_left_radial_background"
+        app:dropRightBackground="@drawable/custom_drop_right_radial_background"
+        app:dropTopBackground="@drawable/custom_drop_top_radial_background"
+        app:elementsHeight="0dp"
+        app:elementsWidth="40dp"
+        app:iconBackgroundChecked="@drawable/icon_background_selected_circular"
+        app:iconBottomLeftCornerRadius="5dp"
+        app:iconBottomRightCornerRadius="5dp"
+        app:iconColorDisabled="#13ffffff"
+        app:iconColorSelected="#68000000"
+        app:iconTopLeftCornerRadius="99dp"
+        app:iconTopRightCornerRadius="99dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/disable_toolbar_label"
+        app:marginParentToElementLeft="15dp"
+        app:marginParentToElementRight="15dp">
+
+        <com.slaviboy.toolbar.ToolbarElement
+            android:id="@+id/stars"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            app:iconNormal="@drawable/ic_9"
+            app:isDisabled="true"
+            app:tooltip="Start" />
+
+        <com.slaviboy.toolbar.ToolbarElement
+            android:id="@+id/microphone"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            app:iconNormal="@drawable/ic_10"
+            app:isDisabled="true"
+            app:tooltip="Microphone" />
+
+        <com.slaviboy.toolbar.ToolbarElement
+            android:id="@+id/shield"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            app:iconNormal="@drawable/ic_14"
+            app:isDisabled="true"
+            app:tooltip="Shield" />
+
+        <com.slaviboy.toolbar.ToolbarElement
+            android:id="@+id/games"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            app:iconNormal="@drawable/ic_16"
+            app:isDisabled="true"
+            app:tooltip="Games" />
+
+    </com.slaviboy.toolbar.HorizontalToolbar>
+
+
+    <TextView
+        android:id="@+id/animatable_toolbar_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="Animatable Toolbar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/disabled_toolbar" />
+
+    <com.slaviboy.toolbar.HorizontalToolbar
+        android:id="@+id/animatable_toolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:background="@drawable/animatable_toolbar_background"
+        android:padding="4dp"
+        app:dropBottomBackground="@drawable/custom_drop_bottom_radial_background"
+        app:dropLeftBackground="@drawable/custom_drop_left_radial_background"
+        app:dropRightBackground="@drawable/custom_drop_right_radial_background"
+        app:dropTopBackground="@drawable/custom_drop_top_radial_background"
+        app:elementsHeight="0dp"
+        app:elementsWidth="40dp"
+        app:iconBackgroundChecked="#00ffffff"
+        app:iconColorChecked="#ffffff"
+        app:iconColorDisabled="#13ffffff"
+        app:iconColorNormal="#68000000"
+        app:iconCornerRadius="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/animatable_toolbar_label"
+        app:marginParentToElementLeft="15dp"
+        app:marginParentToElementRight="15dp">
+
+        <com.slaviboy.toolbar.ToolbarElement
+            android:id="@+id/stop"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            app:iconChecked="@drawable/ic_baseline_report_24"
+            app:iconNormal="@drawable/ic_baseline_report_off_24"
+            app:isCheckable="true"
+            app:isChecked="true"
+            app:tooltip="Stop Sign" />
+
+        <com.slaviboy.toolbar.ToolbarElement
+            android:id="@+id/phone"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            app:iconChecked="@drawable/ic_baseline_phone_enabled_24"
+            app:iconNormal="@drawable/ic_baseline_phone_disabled_24"
+            app:isCheckable="true"
+            app:isChecked="true"
+            app:tooltip="Phone" />
+
+
+        <com.slaviboy.toolbar.ToolbarElement
+            android:id="@+id/visible"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            app:iconChecked="@drawable/ic_baseline_visibility_24"
+            app:iconNormal="@drawable/ic_baseline_visibility_off_24"
+            app:isCheckable="true"
+            app:isChecked="true"
+            app:tooltip="Visibility" />
+
+        <com.slaviboy.toolbar.ToolbarElement
+            android:id="@+id/mute"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            app:iconChecked="@drawable/ic_baseline_volume_up_24"
+            app:iconNormal="@drawable/ic_baseline_volume_off_24"
+            app:isCheckable="true"
+            app:tooltip="Mute Sound" />
 
     </com.slaviboy.toolbar.HorizontalToolbar>
 
@@ -223,19 +382,19 @@
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/textview_background"
         android:gravity="center"
-        android:text=""
-        android:textSize="25dp"
-        android:visibility="gone"
-        android:textColor="#ffffff"
         android:paddingLeft="15dp"
+        android:paddingTop="6dp"
         android:paddingRight="15dp"
         android:paddingBottom="6dp"
+        android:text=""
+        android:textColor="#ffffff"
+        android:textSize="15dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintRight_toRightOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

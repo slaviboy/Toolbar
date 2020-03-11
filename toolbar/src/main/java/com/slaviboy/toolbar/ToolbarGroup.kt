@@ -19,7 +19,7 @@ class ToolbarGroup(var toolbars: ArrayList<Toolbar> = ArrayList()) {
     lateinit var elementsOnTouchListener: ((v: View?, event: MotionEvent?) -> Boolean)
     lateinit var elementsOnDragListener: ((v: View?, dragEvent: DragEvent?) -> Boolean)
 
-    var selectedViewId: Int = -1       // current selected view id
+    var selectedView: ToolbarElement? = null       // current selected view id
 
     init {
         toolbars.forEach {
@@ -81,15 +81,22 @@ class ToolbarGroup(var toolbars: ArrayList<Toolbar> = ArrayList()) {
     private fun onClick(v: View?) {
 
         val toolbar = v?.parent as Toolbar
-        val currentToolbarElement = v as ToolbarElement
-        if (currentToolbarElement.isSelectable && !currentToolbarElement.isDisabled) {
+        val element = v as ToolbarElement
+        if (element.isSelectable && !element.isDisabled) {
 
             // clear selected elements from all
             toolbars.forEach {
-                it.clearSelection()
+                it.selectedView?.isSelected = false
+                it.selectedView = null
             }
-            toolbar.setSelection(v)
-            selectedViewId = v.id
+            toolbar.selectedView = element
+            toolbar.selectedView?.isSelected = true
+            selectedView = element
+        }
+
+        // change icon and background for checkable elements
+        if (element.isCheckable && !element.isDisabled) {
+            element.isChecked = !element.isChecked
         }
     }
 

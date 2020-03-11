@@ -1,6 +1,8 @@
 package com.slaviboy.toolbarexample
 
 import android.animation.AnimatorListenerAdapter
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.TransitionDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -8,10 +10,8 @@ import android.view.DragEvent
 import android.view.MotionEvent
 import android.view.View
 import android.widget.TextView
-import com.slaviboy.toolbar.HorizontalToolbar
-import com.slaviboy.toolbar.ToolbarElement
-import com.slaviboy.toolbar.ToolbarGroup
-import com.slaviboy.toolbar.VerticalToolbar
+import androidx.core.graphics.drawable.DrawableCompat
+import com.slaviboy.toolbar.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,15 +26,54 @@ class MainActivity : AppCompatActivity() {
 
         textView = findViewById(R.id.text)
 
-        // get all three toolbars
-        val toolbar1: VerticalToolbar = findViewById(R.id.vertical_toolbar1)
-        val toolbar2: VerticalToolbar = findViewById(R.id.vertical_toolbar2)
-        val toolbar3: HorizontalToolbar = findViewById(R.id.horizontal_toolbar1)
-        val toolbar4: HorizontalToolbar = findViewById(R.id.horizontal_toolbar2)
+        // g all three toolbars
+        val toolbar1: HorizontalToolbar = findViewById(R.id.checkable_toolbar)
+        val toolbar2: HorizontalToolbar = findViewById(R.id.selectable_toolbar)
+        val toolbar3: HorizontalToolbar = findViewById(R.id.button_toolbar)
+        val toolbar4: HorizontalToolbar = findViewById(R.id.disabled_toolbar)
+        val toolbar5: HorizontalToolbar = findViewById(R.id.animatable_toolbar)
 
         // put toolbars in a group, that way when selecting element, from one toolbar
         // you remove selection from the previously selected element from another toolbar
-        val toolbarGroup: ToolbarGroup = ToolbarGroup(toolbar1, toolbar2, toolbar3, toolbar4)
+        val toolbarGroup: ToolbarGroup =
+            ToolbarGroup(toolbar1, toolbar2, toolbar3, toolbar4, toolbar5)
+
+        toolbar5.setOnElementsStateChangeListener(true) { element: ToolbarElement, previousState: Int, currentState: Int ->
+
+            if (currentState == previousState) {
+                return@setOnElementsStateChangeListener
+            }
+
+            val previousIcon = element.getIcon(previousState)
+            val currentIcon = element.getIcon(currentState)
+
+            val transitionDrawable = TransitionDrawable(
+                arrayOf<Drawable?>(previousIcon, currentIcon)
+            )
+            transitionDrawable.isCrossFadeEnabled = true
+            element.setImageDrawable(transitionDrawable)
+            transitionDrawable.startTransition(500)
+
+            val parent = element.parent as Toolbar
+            when (currentState) {
+                ToolbarElement.STATE_DISABLED -> {
+                    DrawableCompat.setTint(currentIcon, parent.iconColorDisabled)
+                    element.background = parent.iconBackgroundDisabled
+                }
+                ToolbarElement.STATE_SELECTED -> {
+                    DrawableCompat.setTint(currentIcon, parent.iconColorSelected)
+                    element.background = parent.iconBackgroundSelected
+                }
+                ToolbarElement.STATE_CHECKED -> {
+                    DrawableCompat.setTint(currentIcon, parent.iconColorChecked)
+                    element.background = parent.iconBackgroundChecked
+                }
+                else -> {
+                    DrawableCompat.setTint(currentIcon, parent.iconColorNormal)
+                    element.background = parent.iconBackgroundNormal
+                }
+            }
+        }
 
         // show hint text on long click
         toolbarGroup.setOnLongClickListener {
@@ -47,12 +86,12 @@ class MainActivity : AppCompatActivity() {
         // hide hint on drop
         toolbarGroup.setOnDragListener { v, dragEvent ->
 
-             if (dragEvent?.action == DragEvent.ACTION_DROP || dragEvent?.action == DragEvent.ACTION_DRAG_ENDED) {
-                 if (isLongPressed) {
-                     hideHint()
-                     isLongPressed = false
-                 }
-             }
+            if (dragEvent?.action == DragEvent.ACTION_DROP || dragEvent?.action == DragEvent.ACTION_DRAG_ENDED) {
+                if (isLongPressed) {
+                    hideHint()
+                    isLongPressed = false
+                }
+            }
             true
         }
     }

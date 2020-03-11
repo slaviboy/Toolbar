@@ -15,20 +15,21 @@ import androidx.core.graphics.drawable.DrawableCompat
  * @param backgroundColor the background color for the shadow image
  * @param iconColor the icon color for the shadow image
  * @param previousIconColor the icon color for the shadow image, before the changed used to restore the color for the drawable
- * @param cornerRadius the corner radii for all four corners of the shadow image
+ * @param cornerRadius array with corner radii for all four corners of the shadow image
  * @param alpha the opacity of the shadow image
  */
 class DragShadowBuilder(
-    var element: View,
+    var element: ToolbarElement,
     var backgroundColor: Int = Color.GRAY,
     var iconColor: Int = Color.WHITE,
     var previousIconColor: Int = Color.WHITE,
-    var cornerRadius: Float = 5f,
+    var cornerRadius: FloatArray = floatArrayOf(0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f),
     var alpha: Float = 0.8f
 ) : View.DragShadowBuilder(element) {
 
     // bitmap icon for the shadow image
     val bitmap = drawableToBitmap((element as ImageButton).drawable)
+    val path = Path()
 
     val paint = Paint().apply {
         isAntiAlias = true
@@ -89,15 +90,15 @@ class DragShadowBuilder(
 
     override fun onDrawShadow(canvas: Canvas) {
 
+        path.reset()
+        path.addRoundRect(
+            RectF(0f, 0f, element.width * 1f, element.height * 1f),
+            cornerRadius, Path.Direction.CW
+        )
         // draw the background color for the image shadow
         paint.color = backgroundColor
         paint.alpha = (alpha * 255).toInt()
-        canvas.drawRoundRect(
-            RectF(0f, 0f, element.width * 1f, element.height * 1f),
-            cornerRadius,
-            cornerRadius,
-            paint
-        )
+        canvas.drawPath(path, paint)
 
         // draw the icon for the image shadow
         paint.color = iconColor
