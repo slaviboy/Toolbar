@@ -36,13 +36,27 @@ class HorizontalToolbar : Toolbar {
      */
     override fun updateSet() {
 
+        // get all elements that have visibility different from GONE
+        val notGoneElement = ArrayList<ToolbarElement>()
+        elements.forEach {
+            if (it.visibility != View.GONE) {
+                notGoneElement.add(it)
+            }
+        }
+
         val set = ConstraintSet()
         set.clone(this)
-        for (i in elements.indices) {
+        for (i in notGoneElement.indices) {
 
-            val element = elements[i]
+            val element = notGoneElement[i]
 
             if (i == 0) {
+
+                val marginLeft = if (notGoneElement.size == 1) {
+                    marginSingleElement.left
+                } else {
+                    marginParentToElement.left
+                }
 
                 // layout_constraintLeft_toLeftOf for first element with the parent
                 set.connect(
@@ -50,7 +64,7 @@ class HorizontalToolbar : Toolbar {
                     ConstraintSet.LEFT,
                     this.id,
                     ConstraintSet.LEFT,
-                    marginParentToElement.left
+                    marginLeft
                 )
             } else {
 
@@ -58,13 +72,19 @@ class HorizontalToolbar : Toolbar {
                 set.connect(
                     element.id,
                     ConstraintSet.LEFT,
-                    elements[i - 1].id,
+                    notGoneElement[i - 1].id,
                     ConstraintSet.RIGHT,
                     marginElementToElement.left
                 )
             }
 
-            if (i == elements.size - 1) {
+            if (i == notGoneElement.size - 1) {
+
+                val marginRight = if (notGoneElement.size == 1) {
+                    marginSingleElement.right
+                } else {
+                    marginParentToElement.right
+                }
 
                 // layout_constraintRight_toRightOf for last element with parent
                 set.connect(
@@ -72,7 +92,7 @@ class HorizontalToolbar : Toolbar {
                     ConstraintSet.RIGHT,
                     this.id,
                     ConstraintSet.RIGHT,
-                    marginParentToElement.right
+                    marginRight
                 )
             } else {
 
@@ -80,10 +100,16 @@ class HorizontalToolbar : Toolbar {
                 set.connect(
                     element.id,
                     ConstraintSet.RIGHT,
-                    elements[i + 1].id,
+                    notGoneElement[i + 1].id,
                     ConstraintSet.LEFT,
                     0  // marginElementToElement.right
                 )
+            }
+
+            val marginTop = if (notGoneElement.size == 1) {
+                marginSingleElement.top
+            } else {
+                marginParentToElement.top
             }
 
             // layout_constraintTop_toTopOf with parent
@@ -92,8 +118,14 @@ class HorizontalToolbar : Toolbar {
                 ConstraintSet.TOP,
                 this.id,
                 ConstraintSet.TOP,
-                marginParentToElement.top
+                marginTop
             )
+
+            val marginBottom = if (notGoneElement.size == 1) {
+                marginSingleElement.bottom
+            } else {
+                marginParentToElement.bottom
+            }
 
             // layout_constraintBottom_toBottomOf with parent
             set.connect(
@@ -101,7 +133,7 @@ class HorizontalToolbar : Toolbar {
                 ConstraintSet.BOTTOM,
                 this.id,
                 ConstraintSet.BOTTOM,
-                marginParentToElement.bottom
+                marginBottom
             )
 
             // set size to the specified one or WRAP_CONTENT

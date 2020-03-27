@@ -36,7 +36,10 @@
         app:iconCornerRadius="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/checkable_toolbar_label">
+        app:layout_constraintTop_toBottomOf="@id/checkable_toolbar_label"
+        app:marginParentToElementLeft="5dp"
+        app:marginParentToElementRight="5dp"
+        app:marginSingleElement="15dp">
 
         <com.slaviboy.toolbar.ToolbarElement
             android:id="@+id/basketball"

@@ -18,6 +18,12 @@
         <attr name="elementsWidth" format="dimension" />
         <attr name="elementsHeight" format="dimension" />
 
+        <attr name="marginSingleElement" format="dimension" />
+        <attr name="marginSingleElementTop" format="dimension" />
+        <attr name="marginSingleElementLeft" format="dimension" />
+        <attr name="marginSingleElementRight" format="dimension" />
+        <attr name="marginSingleElementBottom" format="dimension" />
+
         <attr name="marginParentToElement" format="dimension" />
         <attr name="marginParentToElementTop" format="dimension" />
         <attr name="marginParentToElementLeft" format="dimension" />

@@ -37,7 +37,7 @@ class VerticalToolbar : Toolbar {
         // get all elements that have visibility different from GONE
         val notGoneElement = ArrayList<ToolbarElement>()
         elements.forEach {
-            if(it.visibility != View.GONE){
+            if (it.visibility != View.GONE) {
                 notGoneElement.add(it)
             }
         }
@@ -49,13 +49,19 @@ class VerticalToolbar : Toolbar {
             val element = notGoneElement[i]
 
             if (i == 0) {
+                val marginTop = if (notGoneElement.size == 1) {
+                    marginSingleElement.top
+                } else {
+                    marginParentToElement.top
+                }
+
                 // layout_constraintTop_toTopOf for first element with the parent
                 set.connect(
                     element.id,
                     ConstraintSet.TOP,
                     this.id,
                     ConstraintSet.TOP,
-                    marginParentToElement.top
+                    marginTop
                 )
             } else {
                 // layout_constraintTop_toBottomOf with the element on top of this one
@@ -69,13 +75,20 @@ class VerticalToolbar : Toolbar {
             }
 
             if (i == notGoneElement.size - 1) {
+
+                val marginBottom = if (notGoneElement.size == 1) {
+                    marginSingleElement.bottom
+                } else {
+                    marginParentToElement.bottom
+                }
+
                 // layout_constraintBottom_toBottomOf for last element with parent
                 set.connect(
                     element.id,
                     ConstraintSet.BOTTOM,
                     this.id,
                     ConstraintSet.BOTTOM,
-                    marginParentToElement.bottom
+                    marginBottom
                 )
             } else {
                 // layout_constraintBottom_toTopOf with the element below this one
@@ -88,14 +101,26 @@ class VerticalToolbar : Toolbar {
                 )
             }
 
+            val marginLeft = if (notGoneElement.size == 1) {
+                marginSingleElement.left
+            } else {
+                marginParentToElement.left
+            }
+
             // layout_constraintLeft_toLeftOf with parent
             set.connect(
                 element.id,
                 ConstraintSet.LEFT,
                 this.id,
                 ConstraintSet.LEFT,
-                marginParentToElement.left
+                marginLeft
             )
+
+            val marginRight = if (notGoneElement.size == 1) {
+                marginSingleElement.right
+            } else {
+                marginParentToElement.right
+            }
 
             // layout_constraintRight_toRightOf with parent
             set.connect(
@@ -103,7 +128,7 @@ class VerticalToolbar : Toolbar {
                 ConstraintSet.RIGHT,
                 this.id,
                 ConstraintSet.RIGHT,
-                marginParentToElement.right
+                marginRight
             )
 
             // set size to the specified one or WRAP_CONTENT

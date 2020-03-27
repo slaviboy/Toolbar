@@ -47,6 +47,7 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
         const val ICON_COLOR_CHECKED: Int = Color.WHITE
         const val MARGIN_ELEMENT_TO_ELEMENT: Int = 5
         const val MARGIN_PARENT_TO_ELEMENT: Int = 0
+        const val MARGIN_SINGLE_ELEMENT: Int = 0
         const val DRAG_SHADOW_OPACITY: Float = 0.6f
 
         /**
@@ -108,6 +109,30 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
             marginElementToElementTemp
         )
         marginElementToElement = Rect(leftE2E, topE2E, rightE2E, bottomE2E)
+
+
+        // margin for single element between it and the parent view
+        val marginSingleElementTemp = attributes.getDimensionPixelSize(
+            R.styleable.Toolbar_marginSingleElement,
+            MARGIN_SINGLE_ELEMENT
+        )
+        val topSE = attributes.getDimensionPixelSize(
+            R.styleable.Toolbar_marginSingleElementTop,
+            marginSingleElementTemp
+        )
+        val leftSE = attributes.getDimensionPixelSize(
+            R.styleable.Toolbar_marginSingleElementLeft,
+            marginSingleElementTemp
+        )
+        val rightSE = attributes.getDimensionPixelSize(
+            R.styleable.Toolbar_marginSingleElementRight,
+            marginSingleElementTemp
+        )
+        val bottomSE = attributes.getDimensionPixelSize(
+            R.styleable.Toolbar_marginSingleElementBottom,
+            marginSingleElementTemp
+        )
+        marginSingleElement = Rect(leftSE, topSE, rightSE, bottomSE)
 
 
         dragShadowOpacity =
@@ -178,15 +203,14 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
         attributes.recycle()
     }
 
-    val elements =
-        ArrayList<ToolbarElement>()            // element that are in this constrain layout
-    var marginElementToElement: Rect                      // margin between two ImageButton elements
-    var marginParentToElement: Rect                       // margin between the parent container and all ImageButton elements
+    val elements = ArrayList<ToolbarElement>()            // element that are in this constrain layout
+    var marginSingleElement: Rect                         // margin for single ToolbarElement with the parent
+    var marginElementToElement: Rect                      // margin between two ToolbarElement elements
+    var marginParentToElement: Rect                       // margin between the parent container and all ToolbarElement elements
     var elementsWidth: Int                                // width of all ImageButton elements
     var elementsHeight: Int                               // height of all ImageButton elements
     var selectedView: ToolbarElement? = null              // current selected ImageButton view id
-    var toolbarGroup: ToolbarGroup? =
-        null                // the group containing this toolbar if such exist, used to transfer selectable elements
+    var toolbarGroup: ToolbarGroup? = null                // the group containing this toolbar if such exist, used to transfer selectable elements
     var dragShadowOpacity: Float                          // the opacity for the drag shadow
 
     // background for drag and drop, when user hovers top, left, right or bottom side
@@ -251,6 +275,12 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
             MARGIN_PARENT_TO_ELEMENT,
             MARGIN_PARENT_TO_ELEMENT,
             MARGIN_PARENT_TO_ELEMENT
+        )
+        marginSingleElement = Rect(
+            MARGIN_SINGLE_ELEMENT,
+            MARGIN_SINGLE_ELEMENT,
+            MARGIN_SINGLE_ELEMENT,
+            MARGIN_SINGLE_ELEMENT
         )
         dragShadowOpacity = DRAG_SHADOW_OPACITY
 
@@ -400,7 +430,7 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
 
                         // remove the listener right after it is executed
                         dragViewParent.layoutTransition.removeTransitionListener(this)
-                        
+
                         if (view?.id == dragView.id && isFirstCall) {
 
                             // if the element location is changed in the same toolbar
