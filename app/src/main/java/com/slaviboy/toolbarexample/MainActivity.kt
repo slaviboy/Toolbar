@@ -33,10 +33,34 @@ class MainActivity : AppCompatActivity() {
         val toolbar4: HorizontalToolbar = findViewById(R.id.disabled_toolbar)
         val toolbar5: HorizontalToolbar = findViewById(R.id.animatable_toolbar)
 
+        val toolbars: ArrayList<Toolbar> =
+            arrayListOf(toolbar1, toolbar2, toolbar3, toolbar4, toolbar5)
+
         // put toolbars in a group, that way when selecting element, from one toolbar
         // you remove selection from the previously selected element from another toolbar
         val toolbarGroup: ToolbarGroup =
             ToolbarGroup(toolbar1, toolbar2, toolbar3, toolbar4, toolbar5)
+
+        val ids = arrayListOf(R.id.basketball, R.id.volleyball, R.id.rugby, R.id.boxing)
+        toolbarGroup.setOnClickListener {
+            if (it?.id == R.id.view_elements) {
+                val isSelected = (it as ToolbarElement).isChecked
+                val visibility = if (isSelected) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
+
+                toolbars.forEach {
+                    for (i in ids.indices) {
+                        val toolbarElement = it.findViewById<ToolbarElement>(ids[i])
+                        if (toolbarElement != null) {
+                            toolbarElement.visibility = visibility
+                        }
+                    }
+                }
+            }
+        }
 
         toolbar5.setOnElementsStateChangeListener(true) { element: ToolbarElement, previousState: Int, currentState: Int ->
 

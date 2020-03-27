@@ -42,13 +42,23 @@
         app:marginSingleElement="15dp">
 
         <com.slaviboy.toolbar.ToolbarElement
+            android:id="@+id/view_elements"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            app:iconNormal="@drawable/ic_view_elements"
+            app:isCheckable="true"
+            app:tooltip="Basketball" />
+
+        <com.slaviboy.toolbar.ToolbarElement
             android:id="@+id/basketball"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:padding="8dp"
+            android:visibility="gone"
             app:iconNormal="@drawable/ic_15"
             app:isCheckable="true"
-            app:isChecked="true"
+            app:isChecked="false"
             app:tooltip="Basketball" />
 
         <com.slaviboy.toolbar.ToolbarElement

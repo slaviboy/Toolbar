@@ -100,6 +100,7 @@ class ToolbarElement : androidx.appcompat.widget.AppCompatImageButton {
     var iconDisabled: Drawable              // icon for disabled state
     var iconChecked: Drawable               // icon for checked state
     var previousState: Int = STATE_NONE     // last recorded state
+    var visibilityListener: ((visibility: Int) -> Unit)? = null
 
     init {
 
@@ -165,6 +166,18 @@ class ToolbarElement : androidx.appcompat.widget.AppCompatImageButton {
     override fun setSelected(selected: Boolean) {
         super.setSelected(selected)
         changeState()
+    }
+
+    override fun setVisibility(visibility: Int) {
+        val previousVisibility = this.visibility
+        super.setVisibility(visibility)
+        if (visibility != previousVisibility) {
+            visibilityListener?.invoke(visibility)
+        }
+    }
+
+    fun OnVisibilityListener(callback: (visibility: Int) -> Unit) {
+        visibilityListener = callback
     }
 
     /**
@@ -241,7 +254,7 @@ class ToolbarElement : androidx.appcompat.widget.AppCompatImageButton {
      * Get current icon, depending on given state
      */
     fun getIcon(state: Int): Drawable {
-        return when(state) {
+        return when (state) {
             STATE_DISABLED -> {
                 iconDisabled
             }
@@ -279,7 +292,7 @@ class ToolbarElement : androidx.appcompat.widget.AppCompatImageButton {
 
     fun getBackground(state: Int): Drawable? {
         val parent = this.parent as Toolbar
-        return when(state) {
+        return when (state) {
             STATE_DISABLED -> {
                 parent.iconBackgroundDisabled
             }
@@ -301,7 +314,10 @@ class ToolbarElement : androidx.appcompat.widget.AppCompatImageButton {
     /**
      * Set hte listener for state changes
      */
-    fun setOnStateChangeListener(override: Boolean, listener: ((element: ToolbarElement, previousState: Int, currentState: Int) -> Unit)) {
+    fun setOnStateChangeListener(
+        override: Boolean,
+        listener: ((element: ToolbarElement, previousState: Int, currentState: Int) -> Unit)
+    ) {
         onStateChangeListener = listener
         onStateChangeListenerOverride = override
     }
