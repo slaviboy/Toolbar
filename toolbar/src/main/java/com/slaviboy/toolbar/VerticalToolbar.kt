@@ -2,6 +2,7 @@ package com.slaviboy.toolbar
 
 import android.content.Context
 import android.graphics.*
+import android.opengl.Visibility
 import android.util.AttributeSet
 import android.util.Log
 import android.view.DragEvent
@@ -33,11 +34,19 @@ class VerticalToolbar : Toolbar {
 
     override fun updateSet() {
 
+        // get all elements that have visibility different from GONE
+        val notGoneElement = ArrayList<ToolbarElement>()
+        elements.forEach {
+            if(it.visibility != View.GONE){
+                notGoneElement.add(it)
+            }
+        }
+
         val set = ConstraintSet()
         set.clone(this)
-        for (i in elements.indices) {
+        for (i in notGoneElement.indices) {
 
-            val element = elements[i]
+            val element = notGoneElement[i]
 
             if (i == 0) {
                 // layout_constraintTop_toTopOf for first element with the parent
@@ -53,13 +62,13 @@ class VerticalToolbar : Toolbar {
                 set.connect(
                     element.id,
                     ConstraintSet.TOP,
-                    elements[i - 1].id,
+                    notGoneElement[i - 1].id,
                     ConstraintSet.BOTTOM,
                     marginElementToElement.top
                 )
             }
 
-            if (i == elements.size - 1) {
+            if (i == notGoneElement.size - 1) {
                 // layout_constraintBottom_toBottomOf for last element with parent
                 set.connect(
                     element.id,
@@ -73,7 +82,7 @@ class VerticalToolbar : Toolbar {
                 set.connect(
                     element.id,
                     ConstraintSet.BOTTOM,
-                    elements[i + 1].id,
+                    notGoneElement[i + 1].id,
                     ConstraintSet.TOP,
                     0  // marginElementToElement.bottom
                 )

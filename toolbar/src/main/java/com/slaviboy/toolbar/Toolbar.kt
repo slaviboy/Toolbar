@@ -398,6 +398,9 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
                         view: View?, transitionType: Int
                     ) {
 
+                        // remove the listener right after it is executed
+                        dragViewParent.layoutTransition.removeTransitionListener(this)
+                        
                         if (view?.id == dragView.id && isFirstCall) {
 
                             // if the element location is changed in the same toolbar
