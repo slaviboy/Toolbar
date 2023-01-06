@@ -1,19 +1,11 @@
 package com.slaviboy.toolbar
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.TransitionDrawable
-import android.os.Build
 import android.util.AttributeSet
-import android.util.Log
-import android.view.DragEvent
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 
 
@@ -23,15 +15,15 @@ import androidx.core.graphics.drawable.DrawableCompat
  */
 class ToolbarElement : androidx.appcompat.widget.AppCompatImageButton {
 
-    constructor(context: Context?) : super(context) {
+    constructor(context: Context) : super(context) {
         applyAttributes(context, null, 0)
     }
 
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
         applyAttributes(context, attrs, 0)
     }
 
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
         defStyleAttr
@@ -43,7 +35,7 @@ class ToolbarElement : androidx.appcompat.widget.AppCompatImageButton {
      * Constructor for generating toolbar element using Kotlin
      */
     constructor(
-        context: Context?,
+        context: Context,
         id: Int = View.generateViewId(),
         iconNormalId: Int = R.drawable.ic_default,
         iconSelectedId: Int = iconNormalId,

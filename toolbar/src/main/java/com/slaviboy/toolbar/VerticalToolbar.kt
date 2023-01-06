@@ -1,15 +1,9 @@
 package com.slaviboy.toolbar
 
 import android.content.Context
-import android.graphics.*
-import android.opengl.Visibility
 import android.util.AttributeSet
-import android.util.Log
-import android.view.DragEvent
 import android.view.View
-import android.widget.ImageButton
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat
 
 /**
  * VerticalToolbar for arranging elements vertically.
@@ -17,9 +11,9 @@ import androidx.core.content.ContextCompat
 
 class VerticalToolbar : Toolbar {
 
-    constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
         defStyleAttr

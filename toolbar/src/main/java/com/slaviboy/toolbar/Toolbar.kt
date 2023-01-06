@@ -19,15 +19,15 @@ import java.security.InvalidParameterException
 open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLongClickListener,
     View.OnDragListener, View.OnTouchListener {
 
-    constructor(context: Context?) : super(context) {
+    constructor(context: Context) : super(context) {
         applyAttributes(context, null, 0)
     }
 
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
         applyAttributes(context, attrs, 0)
     }
 
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
         defStyleAttr

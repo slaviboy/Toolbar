@@ -1,17 +1,17 @@
 package com.slaviboy.toolbarexample
 
-import android.animation.AnimatorListenerAdapter
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.DragEvent
-import android.view.MotionEvent
 import android.view.View
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.DrawableCompat
-import com.slaviboy.toolbar.*
+import com.slaviboy.toolbar.HorizontalToolbar
+import com.slaviboy.toolbar.Toolbar
+import com.slaviboy.toolbar.ToolbarElement
+import com.slaviboy.toolbar.ToolbarGroup
 
 class MainActivity : AppCompatActivity() {
 

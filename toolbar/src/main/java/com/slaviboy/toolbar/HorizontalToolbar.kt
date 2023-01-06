@@ -1,13 +1,9 @@
 package com.slaviboy.toolbar
 
 import android.content.Context
-import android.graphics.*
 import android.util.AttributeSet
-import android.view.DragEvent
 import android.view.View
-import android.widget.ImageButton
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat
 
 /**
  * HorizontalToolbar toolbar for arranging elements horizontally.
@@ -15,9 +11,9 @@ import androidx.core.content.ContextCompat
 
 class HorizontalToolbar : Toolbar {
 
-    constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
         defStyleAttr
