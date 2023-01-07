@@ -4,8 +4,10 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.view.DragEvent
+import android.view.Gravity
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.DrawableCompat
 import com.slaviboy.toolbar.HorizontalToolbar
@@ -53,6 +55,17 @@ class MainActivity : AppCompatActivity() {
                         if (toolbarElement != null) {
                             toolbarElement.visibility = visibility
                         }
+                    }
+                }
+            }
+            (it as ToolbarElement).let {
+                if ((it.parent as View).id == R.id.button_toolbar) {
+                    Toast.makeText(
+                        applicationContext,
+                        "Button was clicked!", Toast.LENGTH_SHORT
+                    ).apply {
+                        setGravity(Gravity.CENTER, 0, 0)
+                        show()
                     }
                 }
             }
