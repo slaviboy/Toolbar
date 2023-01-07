@@ -1,15 +1,31 @@
+/*
+* Copyright (C) 2020 Stanislav Georgiev
+* https://github.com/slaviboy
+*
+*  NOTICE:  All information contained herein is, and remains the property
+*  of Stanislav Georgiev and its suppliers, if any. The intellectual and
+*  technical concepts contained herein are proprietary to Stanislav Georgiev
+*  and its suppliers and may be covered by U.S. and Foreign Patents, patents
+*  in process, and are protected by trade secret or copyright law. Dissemination
+*  of this information or reproduction of this material is strictly forbidden
+*  unless prior written permission is obtained from Stanislav Georgiev.
+*/
 package com.slaviboy.toolbar
 
 import android.content.Context
+import android.graphics.*
 import android.util.AttributeSet
+import android.view.DragEvent
 import android.view.View
+import android.widget.ImageButton
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
 
 /**
  * HorizontalToolbar toolbar for arranging elements horizontally.
  */
 
-class HorizontalToolbar : Toolbar {
+open class HorizontalToolbar : Toolbar {
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
@@ -43,11 +59,8 @@ class HorizontalToolbar : Toolbar {
         val set = ConstraintSet()
         set.clone(this)
         for (i in notGoneElement.indices) {
-
             val element = notGoneElement[i]
-
             if (i == 0) {
-
                 val marginLeft = if (notGoneElement.size == 1) {
                     marginSingleElement.left
                 } else {
@@ -75,7 +88,6 @@ class HorizontalToolbar : Toolbar {
             }
 
             if (i == notGoneElement.size - 1) {
-
                 val marginRight = if (notGoneElement.size == 1) {
                     marginSingleElement.right
                 } else {

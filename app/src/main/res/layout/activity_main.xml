@@ -39,13 +39,14 @@
         app:layout_constraintTop_toBottomOf="@id/checkable_toolbar_label"
         app:marginParentToElementLeft="5dp"
         app:marginParentToElementRight="5dp"
-        app:marginSingleElement="15dp">
+        app:marginSingleElement="0dp">
 
         <com.slaviboy.toolbar.ToolbarElement
             android:id="@+id/view_elements"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:padding="8dp"
+            app:iconChecked="@drawable/ic_hide_elements"
             app:iconNormal="@drawable/ic_view_elements"
             app:isCheckable="true"
             app:tooltip="Basketball" />

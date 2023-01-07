@@ -1,15 +1,33 @@
+/*
+* Copyright (C) 2020 Stanislav Georgiev
+* https://github.com/slaviboy
+*
+*  NOTICE:  All information contained herein is, and remains the property
+*  of Stanislav Georgiev and its suppliers, if any. The intellectual and
+*  technical concepts contained herein are proprietary to Stanislav Georgiev
+*  and its suppliers and may be covered by U.S. and Foreign Patents, patents
+*  in process, and are protected by trade secret or copyright law. Dissemination
+*  of this information or reproduction of this material is strictly forbidden
+*  unless prior written permission is obtained from Stanislav Georgiev.
+*/
 package com.slaviboy.toolbar
 
 import android.content.Context
+import android.graphics.*
+import android.opengl.Visibility
 import android.util.AttributeSet
+import android.util.Log
+import android.view.DragEvent
 import android.view.View
+import android.widget.ImageButton
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
 
 /**
  * VerticalToolbar for arranging elements vertically.
  */
 
-class VerticalToolbar : Toolbar {
+open class VerticalToolbar : Toolbar {
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)

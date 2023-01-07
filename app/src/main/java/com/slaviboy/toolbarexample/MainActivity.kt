@@ -26,31 +26,27 @@ class MainActivity : AppCompatActivity() {
 
         textView = findViewById(R.id.text)
 
-        // g all three toolbars
+        // get all three toolbars
         val toolbar1: HorizontalToolbar = findViewById(R.id.checkable_toolbar)
         val toolbar2: HorizontalToolbar = findViewById(R.id.selectable_toolbar)
         val toolbar3: HorizontalToolbar = findViewById(R.id.button_toolbar)
         val toolbar4: HorizontalToolbar = findViewById(R.id.disabled_toolbar)
         val toolbar5: HorizontalToolbar = findViewById(R.id.animatable_toolbar)
-
-        val toolbars: ArrayList<Toolbar> =
-            arrayListOf(toolbar1, toolbar2, toolbar3, toolbar4, toolbar5)
+        val toolbars: ArrayList<Toolbar> = arrayListOf(toolbar1, toolbar2, toolbar3, toolbar4, toolbar5)
 
         // put toolbars in a group, that way when selecting element, from one toolbar
         // you remove selection from the previously selected element from another toolbar
-        val toolbarGroup: ToolbarGroup =
-            ToolbarGroup(toolbar1, toolbar2, toolbar3, toolbar4, toolbar5)
+        val toolbarGroup = ToolbarGroup(toolbar1, toolbar2, toolbar3, toolbar4, toolbar5)
 
         val ids = arrayListOf(R.id.basketball, R.id.volleyball, R.id.rugby, R.id.boxing)
         toolbarGroup.setOnClickListener {
-            if (it?.id == R.id.view_elements) {
+            if (it.id == R.id.view_elements) {
                 val isSelected = (it as ToolbarElement).isChecked
                 val visibility = if (isSelected) {
                     View.VISIBLE
                 } else {
                     View.GONE
                 }
-
                 toolbars.forEach {
                     for (i in ids.indices) {
                         val toolbarElement = it.findViewById<ToolbarElement>(ids[i])
@@ -63,14 +59,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         toolbar5.setOnElementsStateChangeListener(true) { element: ToolbarElement, previousState: Int, currentState: Int ->
-
             if (currentState == previousState) {
                 return@setOnElementsStateChangeListener
             }
-
             val previousIcon = element.getIcon(previousState)
             val currentIcon = element.getIcon(currentState)
-
             val transitionDrawable = TransitionDrawable(
                 arrayOf<Drawable?>(previousIcon, currentIcon)
             )
@@ -109,8 +102,7 @@ class MainActivity : AppCompatActivity() {
 
         // hide hint on drop
         toolbarGroup.setOnDragListener { v, dragEvent ->
-
-            if (dragEvent?.action == DragEvent.ACTION_DROP || dragEvent?.action == DragEvent.ACTION_DRAG_ENDED) {
+            if (dragEvent.action == DragEvent.ACTION_DROP || dragEvent.action == DragEvent.ACTION_DRAG_ENDED) {
                 if (isLongPressed) {
                     hideHint()
                     isLongPressed = false
@@ -120,14 +112,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showHint() {
+    private fun showHint() {
         textView.visibility = View.VISIBLE
         textView.animate()
             .alpha(1.0f)
             .setDuration(300)
     }
 
-    fun hideHint() {
+    private fun hideHint() {
         textView.animate()
             .alpha(0.0f)
             .setDuration(300)

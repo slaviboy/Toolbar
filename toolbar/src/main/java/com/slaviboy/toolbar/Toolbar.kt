@@ -1,3 +1,15 @@
+/*
+* Copyright (C) 2020 Stanislav Georgiev
+* https://github.com/slaviboy
+*
+*  NOTICE:  All information contained herein is, and remains the property
+*  of Stanislav Georgiev and its suppliers, if any. The intellectual and
+*  technical concepts contained herein are proprietary to Stanislav Georgiev
+*  and its suppliers and may be covered by U.S. and Foreign Patents, patents
+*  in process, and are protected by trade secret or copyright law. Dissemination
+*  of this information or reproduction of this material is strictly forbidden
+*  unless prior written permission is obtained from Stanislav Georgiev.
+*/
 package com.slaviboy.toolbar
 
 import android.animation.LayoutTransition
@@ -5,6 +17,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.opengl.Visibility
 import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
@@ -67,24 +80,101 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
         }
     }
 
+    var areToolbarElementsMovable: Boolean                // if the toolbar elements from this toolbar are movable
+    val elements = ArrayList<ToolbarElement>()            // element that are in this constrain layout
+    var marginSingleElement: Rect                         // margin for single ToolbarElement with the parent
+    var marginElementToElement: Rect                      // margin between two ToolbarElement elements
+    var marginParentToElement: Rect                       // margin between the parent container and all ToolbarElement elements
+    var elementsWidth: Int                                // width of all ImageButton elements
+    var elementsHeight: Int                               // height of all ImageButton elements
+    var selectedView: ToolbarElement? = null              // current selected ImageButton view id
+    var toolbarGroup: ToolbarGroup? = null                // the group containing this toolbar if such exist, used to transfer selectable elements
+    var dragShadowOpacity: Float                          // the opacity for the drag shadow
+
+    // background for drag and drop, when user hovers top, left, right or bottom side
+    var dropBottomBackground: Drawable? = null
+    var dropLeftBackground: Drawable? = null
+    var dropTopBackground: Drawable? = null
+    var dropRightBackground: Drawable? = null
+
+    // icon for different states for the elements of the toolbar
+    var iconColorNormal: Int
+    var iconColorDisabled: Int
+    var iconColorSelected: Int
+    var iconColorChecked: Int
+
+    // background behind the icons for different states for the elements of the toolbar
+    var iconBackgroundNormal: Drawable? = null
+    var iconBackgroundDisabled: Drawable? = null
+    var iconBackgroundSelected: Drawable? = null
+    var iconBackgroundChecked: Drawable? = null
+
+    // corner radii for each corner
+    var iconTopLeftCornerRadius: Float
+    var iconTopRightCornerRadius: Float
+    var iconBottomLeftCornerRadius: Float
+    var iconBottomRightCornerRadius: Float
+
+    // listeners and whether to override the existing one in this class and stop them from executing
+    lateinit var onElementChangeToolbar: ((addToolbar: Toolbar, removeToolbar: Toolbar, toolbarElement: ToolbarElement, newPosition: Int) -> Unit)
+    lateinit var elementsOnClickListener: ((v: View) -> Unit)
+    lateinit var elementsOnLongClickListener: ((v: View) -> Boolean)
+    lateinit var elementsOnTouchListener: ((v: View, event: MotionEvent) -> Boolean)
+    lateinit var elementsOnDragListener: ((v: View, dragEvent: DragEvent) -> Boolean)
+    lateinit var toolbarOnElementsReady: ((v: Toolbar) -> Unit)
+    var elementsOnClickOverride: Boolean = false
+    var elementsOnLongClickOverride: Boolean = false
+    var elementsOnTouchOverride: Boolean = false
+    var elementsOnDragOverride: Boolean = false
+
+    // listener for state change for all elements - normal(enabled), disabled, selected, checked
+    lateinit var onElementsStateChangeListener: ((element: ToolbarElement, previousState: Int, currentState: Int) -> Unit)
+    var onElementsStateChangeListenerOverride: Boolean = false
+
+    init {
+
+        // set default values
+        iconTopLeftCornerRadius = ICON_CORNER_RADIUS
+        iconTopRightCornerRadius = ICON_CORNER_RADIUS
+        iconBottomLeftCornerRadius = ICON_CORNER_RADIUS
+        iconBottomRightCornerRadius = ICON_CORNER_RADIUS
+        iconColorNormal = ICON_COLOR_NORMAL
+        iconColorDisabled = ICON_COLOR_DISABLED
+        iconColorSelected = ICON_COLOR_SELECTED
+        iconColorChecked = ICON_COLOR_CHECKED
+        elementsWidth = ELEMENTS_WIDTH
+        elementsHeight = ELEMENTS_HEIGHT
+        marginElementToElement = Rect(MARGIN_ELEMENT_TO_ELEMENT, MARGIN_ELEMENT_TO_ELEMENT, MARGIN_ELEMENT_TO_ELEMENT, MARGIN_ELEMENT_TO_ELEMENT)
+        marginParentToElement = Rect(MARGIN_PARENT_TO_ELEMENT, MARGIN_PARENT_TO_ELEMENT, MARGIN_PARENT_TO_ELEMENT, MARGIN_PARENT_TO_ELEMENT)
+        marginSingleElement = Rect(MARGIN_SINGLE_ELEMENT, MARGIN_SINGLE_ELEMENT, MARGIN_SINGLE_ELEMENT, MARGIN_SINGLE_ELEMENT)
+        dragShadowOpacity = DRAG_SHADOW_OPACITY
+        areToolbarElementsMovable = true
+
+        setDefaultBackgrounds()
+
+        this.afterMeasured {
+            val elements: Array<ToolbarElement> = Array(childCount) { i -> this@Toolbar.getChildAt(i) as ToolbarElement }
+            add(0, *elements)
+
+            if (::toolbarOnElementsReady.isInitialized) {
+                toolbarOnElementsReady.invoke(this@Toolbar)
+            }
+        }
+    }
+
     /**
      * Apply the attributes from the xml custom attributes, for the
      * Toolbar class.
      */
     fun applyAttributes(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) {
 
-        val attributes =
-            context!!.obtainStyledAttributes(attrs, R.styleable.Toolbar, defStyleAttr, 0)
+        val attributes = context!!.obtainStyledAttributes(attrs, R.styleable.Toolbar, defStyleAttr, 0)
 
         // size of the elements
-        val WIDTH =
-            if (this is VerticalToolbar) VerticalToolbar.ELEMENTS_WIDTH else HorizontalToolbar.ELEMENTS_WIDTH
-        val HEIGHT =
-            if (this is VerticalToolbar) VerticalToolbar.ELEMENTS_HEIGHT else HorizontalToolbar.ELEMENTS_HEIGHT
-        elementsWidth =
-            attributes.getDimensionPixelSize(R.styleable.Toolbar_elementsWidth, WIDTH)
-        elementsHeight =
-            attributes.getDimensionPixelSize(R.styleable.Toolbar_elementsHeight, HEIGHT)
+        val WIDTH = if (this is VerticalToolbar) VerticalToolbar.ELEMENTS_WIDTH else HorizontalToolbar.ELEMENTS_WIDTH
+        val HEIGHT = if (this is VerticalToolbar) VerticalToolbar.ELEMENTS_HEIGHT else HorizontalToolbar.ELEMENTS_HEIGHT
+        elementsWidth = attributes.getDimensionPixelSize(R.styleable.Toolbar_elementsWidth, WIDTH)
+        elementsHeight = attributes.getDimensionPixelSize(R.styleable.Toolbar_elementsHeight, HEIGHT)
 
 
         // margin between element and another element
@@ -135,8 +225,7 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
         marginSingleElement = Rect(leftSE, topSE, rightSE, bottomSE)
 
 
-        dragShadowOpacity =
-            attributes.getFloat(R.styleable.Toolbar_dragShadowOpacity, DRAG_SHADOW_OPACITY)
+        dragShadowOpacity = attributes.getFloat(R.styleable.Toolbar_dragShadowOpacity, DRAG_SHADOW_OPACITY)
 
         // margin between parent and element
         val marginParentToElementTemp = attributes.getDimensionPixelSize(
@@ -162,12 +251,9 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
         marginParentToElement = Rect(leftP2E, topP2E, rightP2E, bottomP2E)
 
         // corner radii for each corner
-        val iconCornerRadius =
-            attributes.getDimension(R.styleable.Toolbar_iconCornerRadius, ICON_CORNER_RADIUS)
-        iconTopLeftCornerRadius =
-            attributes.getDimension(R.styleable.Toolbar_iconTopLeftCornerRadius, iconCornerRadius)
-        iconTopRightCornerRadius =
-            attributes.getDimension(R.styleable.Toolbar_iconTopRightCornerRadius, iconCornerRadius)
+        val iconCornerRadius = attributes.getDimension(R.styleable.Toolbar_iconCornerRadius, ICON_CORNER_RADIUS)
+        iconTopLeftCornerRadius = attributes.getDimension(R.styleable.Toolbar_iconTopLeftCornerRadius, iconCornerRadius)
+        iconTopRightCornerRadius = attributes.getDimension(R.styleable.Toolbar_iconTopRightCornerRadius, iconCornerRadius)
         iconBottomLeftCornerRadius = attributes.getDimension(
             R.styleable.Toolbar_iconBottomLeftCornerRadius,
             iconCornerRadius
@@ -178,14 +264,10 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
         )
 
         // icon colors
-        iconColorNormal =
-            attributes.getColor(R.styleable.Toolbar_iconColorNormal, ICON_COLOR_NORMAL)
-        iconColorDisabled =
-            attributes.getColor(R.styleable.Toolbar_iconColorDisabled, ICON_COLOR_DISABLED)
-        iconColorSelected =
-            attributes.getColor(R.styleable.Toolbar_iconColorSelected, ICON_COLOR_SELECTED)
-        iconColorChecked =
-            attributes.getColor(R.styleable.Toolbar_iconColorChecked, ICON_COLOR_CHECKED)
+        iconColorNormal = attributes.getColor(R.styleable.Toolbar_iconColorNormal, ICON_COLOR_NORMAL)
+        iconColorDisabled = attributes.getColor(R.styleable.Toolbar_iconColorDisabled, ICON_COLOR_DISABLED)
+        iconColorSelected = attributes.getColor(R.styleable.Toolbar_iconColorSelected, ICON_COLOR_SELECTED)
+        iconColorChecked = attributes.getColor(R.styleable.Toolbar_iconColorChecked, ICON_COLOR_CHECKED)
 
         // elements backgrounds
         iconBackgroundSelected = attributes.getDrawable(R.styleable.Toolbar_iconBackgroundSelected)
@@ -203,116 +285,20 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
         attributes.recycle()
     }
 
-    val elements =
-        ArrayList<ToolbarElement>()            // element that are in this constrain layout
-    var marginSingleElement: Rect                         // margin for single ToolbarElement with the parent
-    var marginElementToElement: Rect                      // margin between two ToolbarElement elements
-    var marginParentToElement: Rect                       // margin between the parent container and all ToolbarElement elements
-    var elementsWidth: Int                                // width of all ImageButton elements
-    var elementsHeight: Int                               // height of all ImageButton elements
-    var selectedView: ToolbarElement? = null              // current selected ImageButton view id
-    var toolbarGroup: ToolbarGroup? =
-        null                // the group containing this toolbar if such exist, used to transfer selectable elements
-    var dragShadowOpacity: Float                          // the opacity for the drag shadow
-
-    // background for drag and drop, when user hovers top, left, right or bottom side
-    var dropBottomBackground: Drawable? = null
-    var dropLeftBackground: Drawable? = null
-    var dropTopBackground: Drawable? = null
-    var dropRightBackground: Drawable? = null
-
-    // icon for different states for the elements of the toolbar
-    var iconColorNormal: Int
-    var iconColorDisabled: Int
-    var iconColorSelected: Int
-    var iconColorChecked: Int
-
-    // background behind the icons for different states for the elements of the toolbar
-    var iconBackgroundNormal: Drawable? = null
-    var iconBackgroundDisabled: Drawable? = null
-    var iconBackgroundSelected: Drawable? = null
-    var iconBackgroundChecked: Drawable? = null
-
-    // corner radii for each corner
-    var iconTopLeftCornerRadius: Float
-    var iconTopRightCornerRadius: Float
-    var iconBottomLeftCornerRadius: Float
-    var iconBottomRightCornerRadius: Float
-
-    // listeners and whether to override the existing one in this class and stop them from executing
-    lateinit var elementsOnClickListener: ((v: View?) -> Unit)
-    lateinit var elementsOnLongClickListener: ((v: View?) -> Boolean)
-    lateinit var elementsOnTouchListener: ((v: View?, event: MotionEvent?) -> Boolean)
-    lateinit var elementsOnDragListener: ((v: View?, dragEvent: DragEvent?) -> Boolean)
-    var elementsOnClickOverride: Boolean = false
-    var elementsOnLongClickOverride: Boolean = false
-    var elementsOnTouchOverride: Boolean = false
-    var elementsOnDragOverride: Boolean = false
-
-    // listener for state change for all elements - normal(enabled), disabled, selected, checked
-    lateinit var onElementsStateChangeListener: ((element: ToolbarElement, previousState: Int, currentState: Int) -> Unit)
-    var onElementsStateChangeListenerOverride: Boolean = false
-
-    init {
-
-        // set default values
-        iconTopLeftCornerRadius = ICON_CORNER_RADIUS
-        iconTopRightCornerRadius = ICON_CORNER_RADIUS
-        iconBottomLeftCornerRadius = ICON_CORNER_RADIUS
-        iconBottomRightCornerRadius = ICON_CORNER_RADIUS
-        iconColorNormal = ICON_COLOR_NORMAL
-        iconColorDisabled = ICON_COLOR_DISABLED
-        iconColorSelected = ICON_COLOR_SELECTED
-        iconColorChecked = ICON_COLOR_CHECKED
-        elementsWidth = ELEMENTS_WIDTH
-        elementsHeight = ELEMENTS_HEIGHT
-        marginElementToElement = Rect(
-            MARGIN_ELEMENT_TO_ELEMENT,
-            MARGIN_ELEMENT_TO_ELEMENT,
-            MARGIN_ELEMENT_TO_ELEMENT,
-            MARGIN_ELEMENT_TO_ELEMENT
-        )
-        marginParentToElement = Rect(
-            MARGIN_PARENT_TO_ELEMENT,
-            MARGIN_PARENT_TO_ELEMENT,
-            MARGIN_PARENT_TO_ELEMENT,
-            MARGIN_PARENT_TO_ELEMENT
-        )
-        marginSingleElement = Rect(
-            MARGIN_SINGLE_ELEMENT,
-            MARGIN_SINGLE_ELEMENT,
-            MARGIN_SINGLE_ELEMENT,
-            MARGIN_SINGLE_ELEMENT
-        )
-        dragShadowOpacity = DRAG_SHADOW_OPACITY
-
-        setDefaultBackgrounds()
-
-        this.afterMeasured {
-            val elements: Array<ToolbarElement> =
-                Array(childCount) { i -> this@Toolbar.getChildAt(i) as ToolbarElement }
-            add(0, *elements)
-        }
-    }
-
     fun setDefaultBackgrounds() {
 
         // set default drop backgrounds
         if (dropTopBackground == null) {
-            dropTopBackground =
-                ContextCompat.getDrawable(context, R.drawable.default_drop_top_background)
+            dropTopBackground = ContextCompat.getDrawable(context, R.drawable.default_drop_top_background)
         }
         if (dropLeftBackground == null) {
-            dropLeftBackground =
-                ContextCompat.getDrawable(context, R.drawable.default_drop_left_background)
+            dropLeftBackground = ContextCompat.getDrawable(context, R.drawable.default_drop_left_background)
         }
         if (dropRightBackground == null) {
-            dropRightBackground =
-                ContextCompat.getDrawable(context, R.drawable.default_drop_right_background)
+            dropRightBackground = ContextCompat.getDrawable(context, R.drawable.default_drop_right_background)
         }
         if (dropBottomBackground == null) {
-            dropBottomBackground =
-                ContextCompat.getDrawable(context, R.drawable.default_drop_bottom_background)
+            dropBottomBackground = ContextCompat.getDrawable(context, R.drawable.default_drop_bottom_background)
         }
 
         // set default toolbar background
@@ -321,33 +307,27 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
         }
     }
 
-    fun setOnClickListener(override: Boolean, listener: ((v: View?) -> Unit)) {
+    fun setOnClickListener(override: Boolean, listener: ((v: View) -> Unit)) {
         elementsOnClickListener = listener
         elementsOnClickOverride = override
     }
 
-    fun setOnLongClickListener(override: Boolean, listener: ((v: View?) -> Boolean)) {
+    fun setOnLongClickListener(override: Boolean, listener: ((v: View) -> Boolean)) {
         elementsOnLongClickListener = listener
         elementsOnLongClickOverride = override
     }
 
-    fun setOnTouchListener(
-        override: Boolean,
-        listener: ((v: View?, event: MotionEvent?) -> Boolean)
-    ) {
+    fun setOnTouchListener(override: Boolean, listener: ((v: View, event: MotionEvent) -> Boolean)) {
         elementsOnTouchListener = listener
         elementsOnTouchOverride = override
     }
 
-    fun setOnDragListener(
-        override: Boolean,
-        listener: ((v: View?, dragEvent: DragEvent?) -> Boolean)
-    ) {
+    fun setOnDragListener(override: Boolean, listener: ((v: View, dragEvent: DragEvent) -> Boolean)) {
         elementsOnDragListener = listener
         elementsOnDragOverride = override
     }
 
-    override fun onDrag(v: View?, dragEvent: DragEvent?): Boolean {
+    override fun onDrag(v: View, dragEvent: DragEvent): Boolean {
 
         if (::elementsOnDragListener.isInitialized) {
             val returnValue = elementsOnDragListener.invoke(v, dragEvent)
@@ -359,7 +339,7 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
         }
 
         val element = v as ToolbarElement
-        when (dragEvent?.action) {
+        when (dragEvent.action) {
             DragEvent.ACTION_DRAG_ENDED -> {
                 return true
             }
@@ -410,56 +390,65 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
                 }
 
                 val previousIndex = dragViewParent.elements.indexOf(dragView)
-                var isFirstCall: Boolean = true
+                var isFirstCall = true
 
-                /**
-                 * there is a problem using a animation for the layout transition, the child is still
-                 * not removed until the animation finished, so a listener is needed, that way once the
-                 * animation is done, the same view is added to its new parent
-                 */
-                dragViewParent.layoutTransition.addTransitionListener(object :
-                    LayoutTransition.TransitionListener {
-                    override fun startTransition(
-                        transition: LayoutTransition?, container: ViewGroup?,
-                        view: View?, transitionType: Int
-                    ) {
-                    }
+                fun finishTransitionOfToolbarElement() {
 
-                    override fun endTransition(
-                        transition: LayoutTransition?, container: ViewGroup?,
-                        view: View?, transitionType: Int
-                    ) {
+                    // if the element location is changed in the same toolbar
+                    if (dragViewParent.id == viewParent.id) {
 
-                        // remove the listener right after it is executed
-                        dragViewParent.layoutTransition.removeTransitionListener(this)
-
-                        if (view?.id == dragView.id && isFirstCall) {
-
-                            // if the element location is changed in the same toolbar
-                            if (dragViewParent.id == viewParent.id) {
-
-                                // since it is removed from same toolbar
-                                if (nextIndex > previousIndex) {
-                                    nextIndex--
-                                }
-                            }
-
-                            // add the same view to its new parent view
-                            viewParent.add(nextIndex, dragView)
-
-                            // change the selected element, for both toolbars
-                            if (dragView.isSelected) {
-                                dragViewParent.selectedView = null
-                                viewParent.selectedView = dragView
-                            }
-
-                            isFirstCall = false
+                        // since it is removed from same toolbar
+                        if (nextIndex > previousIndex) {
+                            nextIndex--
                         }
                     }
-                })
+
+                    // add the same view to its new parent view
+                    viewParent.add(nextIndex, dragView)
+
+                    // change the selected element, for both toolbars
+                    if (dragView.isSelected) {
+                        dragViewParent.selectedView = null
+                        viewParent.selectedView = dragView
+                    }
+                }
+
+                // if we use animation for the transition, we add the drawView to its new toolbar once the animation has ended
+                if (dragViewParent.layoutTransition != null)
+                    dragViewParent.layoutTransition.addTransitionListener(object :
+                        LayoutTransition.TransitionListener {
+                        override fun startTransition(
+                            transition: LayoutTransition?, container: ViewGroup?,
+                            view: View?, transitionType: Int
+                        ) {
+                        }
+
+                        override fun endTransition(
+                            transition: LayoutTransition?, container: ViewGroup?,
+                            view: View?, transitionType: Int
+                        ) {
+
+                            if (view?.id == dragView.id && isFirstCall) {
+                                finishTransitionOfToolbarElement()
+                                isFirstCall = false
+                            }
+
+                            // remove the listener right after it is executed
+                            dragViewParent.layoutTransition.removeTransitionListener(this)
+                        }
+                    })
 
                 // remove view from its parent, and wait for the endTransition to be called
                 dragViewParent.remove(dragView)
+
+                // if there is no transition animation immediately after the child is removed add it to its new toolbar
+                if (dragViewParent.layoutTransition == null) {
+                    finishTransitionOfToolbarElement()
+                }
+
+                if (::onElementChangeToolbar.isInitialized) {
+                    onElementChangeToolbar(viewParent, dragViewParent, dragView, nextIndex)
+                }
 
                 return true
             }
@@ -494,8 +483,7 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
         }
     }
 
-    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-
+    override fun onTouch(v: View, event: MotionEvent): Boolean {
         if (::elementsOnTouchListener.isInitialized) {
             val returnValue = elementsOnTouchListener.invoke(v, event)
 
@@ -510,8 +498,7 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
         return false
     }
 
-    override fun onClick(v: View?) {
-
+    override fun onClick(v: View) {
         if (::elementsOnClickListener.isInitialized) {
             elementsOnClickListener.invoke(v)
 
@@ -537,8 +524,7 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
         }
     }
 
-    override fun onLongClick(v: View?): Boolean {
-
+    override fun onLongClick(v: View): Boolean {
         if (::elementsOnLongClickListener.isInitialized) {
             val returnValue = elementsOnLongClickListener.invoke(v)
 
@@ -547,6 +533,7 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
                 return returnValue
             }
         }
+        if (!areToolbarElementsMovable) return true
 
         // instantiates the drag shadow builder
         val element = v as ToolbarElement
@@ -591,11 +578,9 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
      * properties to the new toolbar element and set listeners.
      */
     fun add(startIndex: Int = 0, vararg elements: ToolbarElement) {
-
         if (elements.isNotEmpty()) {
             visibility = View.VISIBLE
         }
-
         for (i in elements.indices) {
 
             val element = elements[i]
@@ -643,14 +628,15 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
      * Check the toolbar element for exceptions, when added to the toolbar.
      */
     fun checkException(element: ToolbarElement) {
-
         if (selectedView == null && element.isSelected) {
             selectedView = element
         } else if (selectedView != null && element.isSelected && selectedView?.id != element.id) {
             throw InvalidParameterException(
-                "Cannot have two or more elements selected at the same time: ${getId(selectedView!!)} and ${getId(
-                    element
-                )}"
+                "Cannot have two or more elements selected at the same time: ${getId(selectedView!!)} and ${
+                    getId(
+                        element
+                    )
+                }"
             )
         }
 
@@ -660,9 +646,11 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
             (element.isSelected && element.isChecked)
         ) {
             throw InvalidParameterException(
-                "Toolbar elements can`t be selectable and checkable at the same time: ${getId(
-                    element
-                )}"
+                "Toolbar elements can`t be selectable and checkable at the same time: ${
+                    getId(
+                        element
+                    )
+                }"
             )
         }
 
@@ -710,6 +698,28 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
         updateSet()
     }
 
+    lateinit var onToolbarElementRemovedListener: ((v: ToolbarElement?) -> Unit)
+    lateinit var onToolbarElementAddedListener: ((v: ToolbarElement?) -> Unit)
+
+    val isOnToolbarElementAddedListenerInitialized: Boolean
+        get() = ::onToolbarElementAddedListener.isInitialized
+
+    val isOnToolbarElementRemovedListenerInitialized: Boolean
+        get() = ::onToolbarElementRemovedListener.isInitialized
+
+    override fun onViewRemoved(view: View) {
+        super.onViewRemoved(view)
+        if (::onToolbarElementRemovedListener.isInitialized) {
+            onToolbarElementRemovedListener.invoke(view as ToolbarElement)
+        }
+    }
+
+    override fun onViewAdded(view: View) {
+        super.onViewRemoved(view)
+        if (::onToolbarElementAddedListener.isInitialized) {
+            onToolbarElementAddedListener.invoke(view as ToolbarElement)
+        }
+    }
 
     /**
      * Set the listener for the state change, for all elements added to this
@@ -721,5 +731,21 @@ open abstract class Toolbar : ConstraintLayout, View.OnClickListener, View.OnLon
     ) {
         onElementsStateChangeListener = listener
         onElementsStateChangeListenerOverride = override
+    }
+
+    /**
+     * Check if there are visible elements in the toolbar
+     */
+    fun haveVisibleElements(): Boolean {
+        if (elements.size == 0) return false
+
+        // if any of the elements is visible return true
+        elements.forEach {
+            if (it.visibility == View.VISIBLE) {
+                return true
+            }
+        }
+
+        return false
     }
 }

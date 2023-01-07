@@ -1,3 +1,15 @@
+/*
+* Copyright (C) 2020 Stanislav Georgiev
+* https://github.com/slaviboy
+*
+*  NOTICE:  All information contained herein is, and remains the property
+*  of Stanislav Georgiev and its suppliers, if any. The intellectual and
+*  technical concepts contained herein are proprietary to Stanislav Georgiev
+*  and its suppliers and may be covered by U.S. and Foreign Patents, patents
+*  in process, and are protected by trade secret or copyright law. Dissemination
+*  of this information or reproduction of this material is strictly forbidden
+*  unless prior written permission is obtained from Stanislav Georgiev.
+*/
 package com.slaviboy.toolbar
 
 import android.content.Context
@@ -8,12 +20,11 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.graphics.drawable.DrawableCompat
 
-
 /**
  * Elements for the toolbars, those are ImageButtons that have some custom
  * properties, that are used in the toolbars.
  */
-class ToolbarElement : androidx.appcompat.widget.AppCompatImageButton {
+open class ToolbarElement : androidx.appcompat.widget.AppCompatImageButton {
 
     constructor(context: Context) : super(context) {
         applyAttributes(context, null, 0)
@@ -23,11 +34,7 @@ class ToolbarElement : androidx.appcompat.widget.AppCompatImageButton {
         applyAttributes(context, attrs, 0)
     }
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
-    ) {
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         applyAttributes(context, attrs, defStyleAttr)
     }
 
@@ -80,6 +87,10 @@ class ToolbarElement : androidx.appcompat.widget.AppCompatImageButton {
     var tooltip: String?                    // tooltip text that can be used as hint to show text about current element
     var isSelectable: Boolean               // whether the element is selectable
     var isDisabled: Boolean                 // whether the element is disabled
+        set(value) {
+            field = value
+            changeState()
+        }
     var isInitInToolbar: Boolean            // whether the element is initialized in its parant toolbar
     var isCheckable: Boolean                // whether the element is checkable as checkbox element
     var isChecked: Boolean                  // if current element is checked
@@ -95,13 +106,10 @@ class ToolbarElement : androidx.appcompat.widget.AppCompatImageButton {
     var visibilityListener: ((visibility: Int) -> Unit)? = null
 
     init {
-
-        // default attributes and properties
         scaleType = ScaleType.CENTER_INSIDE
         setBackgroundColor(Color.TRANSPARENT)
         adjustViewBounds = true
         tooltip = ""
-
         iconNormal = resources.getDrawable(R.drawable.ic_default, null)
         iconSelected = iconNormal
         iconDisabled = iconNormal
@@ -115,9 +123,7 @@ class ToolbarElement : androidx.appcompat.widget.AppCompatImageButton {
     }
 
     fun applyAttributes(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) {
-        val attributes =
-            context!!.obtainStyledAttributes(attrs, R.styleable.ToolbarElement, defStyleAttr, 0)
-
+        val attributes = context!!.obtainStyledAttributes(attrs, R.styleable.ToolbarElement, defStyleAttr, 0)
         isSelectable = attributes.getBoolean(R.styleable.ToolbarElement_isSelectable, IS_SELECTABLE)
         isSelected = attributes.getBoolean(R.styleable.ToolbarElement_isSelected, false)
         isDisabled = attributes.getBoolean(R.styleable.ToolbarElement_isDisabled, IS_DISABLED)
@@ -178,13 +184,10 @@ class ToolbarElement : androidx.appcompat.widget.AppCompatImageButton {
      * global values from the parent view.
      */
     fun changeState() {
-
         if (parent == null) {
             return
         }
-
         val p = parent as Toolbar
-
         val currentState = getState()
         if (::onStateChangeListener.isInitialized) {
             onStateChangeListener.invoke(this, previousState, currentState)
@@ -227,18 +230,10 @@ class ToolbarElement : androidx.appcompat.widget.AppCompatImageButton {
      */
     fun getState(): Int {
         return when {
-            isDisabled -> {
-                STATE_DISABLED
-            }
-            isSelected -> {
-                STATE_SELECTED
-            }
-            isChecked -> {
-                STATE_CHECKED
-            }
-            else -> {
-                STATE_NORMAL
-            }
+            isDisabled -> STATE_DISABLED
+            isSelected -> STATE_SELECTED
+            isChecked -> STATE_CHECKED
+            else -> STATE_NORMAL
         }
     }
 
@@ -308,7 +303,7 @@ class ToolbarElement : androidx.appcompat.widget.AppCompatImageButton {
      */
     fun setOnStateChangeListener(
         override: Boolean,
-        listener: ((element: ToolbarElement, previousState: Int, currentState: Int) -> Unit)
+        listener: (element: ToolbarElement, previousState: Int, currentState: Int) -> Unit
     ) {
         onStateChangeListener = listener
         onStateChangeListenerOverride = override
