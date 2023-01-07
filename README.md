@@ -1,8 +1,6 @@
 # Toolbar
 
-<a align="center" href="https://slaviboy.github.io/Compose-Icons-Site/">
-    <img src="https://github.com/slaviboy/RepositoryImages/blob/main/lib/toolbar_home.png" alt="Image" />
-</a>
+<img src="https://github.com/slaviboy/RepositoryImages/blob/main/lib/toolbar_home.png" alt="Image" />
 
 ## Dependency
 Step 1.
